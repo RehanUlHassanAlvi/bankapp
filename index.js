@@ -6,6 +6,7 @@ const docRoutes = require('./routes/docRoutes');
 require('dotenv').config();
 
 const app = express();
+app.use(cors());
 
 app.use(bodyParser.json());
 app.use('/apiauth', authRoutes); 
