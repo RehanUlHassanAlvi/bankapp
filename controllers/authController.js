@@ -34,6 +34,7 @@ const register = async (req, res) => {
   }
 };
 
+
 const verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
 
@@ -128,4 +129,55 @@ const resendOtp = async (req, res) => {
   }
 };
 
-module.exports = { register, login, verifyOtp, resendOtp };
+
+
+const addKyc = async (req,res) => {
+
+  const { email, kycUrl } = req.body;
+  const user = await User.findOne({ where: { email } });
+  
+  try {
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+    // Check if OTP is verified
+    if (!user.isOtpVerified) {
+      return res.status(400).json({ message: 'OTP not verified' });
+    }
+
+   user.kycImageURL=kycUrl;
+    await user.save();
+    
+    res.status(200).json({ message: 'KYC added Successfully, Admin will verify' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+const updateKycStatus = async (req,res) => {
+
+  const { email } = req.body;
+  const user = await User.findOne({ where: { email } });
+  
+  try {
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+    // Check if OTP is verified
+    if (!user.isOtpVerified) {
+      return res.status(400).json({ message: 'OTP not verified' });
+    }
+
+   user.isKycVerified=true;
+    await user.save();
+    
+    res.status(200).json({ message: 'KYC updated Successfully' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { register, login, verifyOtp, resendOtp,addKyc,updateKycStatus };

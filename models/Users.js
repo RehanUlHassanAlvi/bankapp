@@ -31,6 +31,14 @@ const User = sequelize.define('User', {
   isOtpVerified: {
     type: DataTypes.BOOLEAN,
     defaultValue: false
+  },
+  isKycVerified: {
+    type: DataTypes.BOOLEAN,
+    defaultValue: false
+  },
+  kycImageURL:{
+    type: DataTypes.STRING,
+    allowNull: true
   }
 });
 
