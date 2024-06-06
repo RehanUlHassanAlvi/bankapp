@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
-const Document = require('./Document');
+const Document = require('./Documents');
 
 const ProofOfIncome = sequelize.define('ProofOfIncome', {
   id: {
@@ -10,7 +10,11 @@ const ProofOfIncome = sequelize.define('ProofOfIncome', {
   },
   documentId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false ,
+    references: {
+      model: 'Documents',
+      key: 'id'
+    }
   },
   sourceName: {
     type: DataTypes.STRING,
@@ -33,6 +37,5 @@ const ProofOfIncome = sequelize.define('ProofOfIncome', {
   }
 });
 
-ProofOfIncome.belongsTo(Document);
 
 module.exports = ProofOfIncome;

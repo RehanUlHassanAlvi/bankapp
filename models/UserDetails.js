@@ -81,8 +81,4 @@ const UserDetails = sequelize.define('UserDetails', {
   }
 });
 
-sequelize.sync()
-  .then(() => console.log('UserDetails table created'))
-  .catch(err => console.log('Error: ' + err));
-
 module.exports = UserDetails;

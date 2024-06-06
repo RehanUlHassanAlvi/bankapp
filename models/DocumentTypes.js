@@ -17,10 +17,4 @@ const DocumentType = sequelize.define('DocumentType', {
   }
 });
 
-DocumentType.hasMany(Document);
-
-sequelize.sync()
-  .then(() => console.log('DocumentTypes table created'))
-  .catch(err => console.log('Error: ' + err));
-
 module.exports = DocumentType;

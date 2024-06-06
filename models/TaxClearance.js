@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
-const Document = require('./Document');
+const Document = require('./Documents');
 
 const TaxClearance = sequelize.define('TaxClearance', {
   id: {
@@ -10,7 +10,11 @@ const TaxClearance = sequelize.define('TaxClearance', {
   },
   documentId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false ,
+    references: {
+      model: 'Documents',
+      key: 'id'
+    }
   },
   expiryDate: {
     type: DataTypes.DATEONLY,
@@ -22,6 +26,5 @@ const TaxClearance = sequelize.define('TaxClearance', {
   }
 });
 
-TaxClearance.belongsTo(Document);
 
 module.exports = TaxClearance;

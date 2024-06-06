@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
-const Document = require('./Document');
+const Document = require('./Documents');
 
 const IdentityDocument = sequelize.define('IdentityDocument', {
   id: {
@@ -10,7 +10,11 @@ const IdentityDocument = sequelize.define('IdentityDocument', {
   },
   documentId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false ,
+    references: {
+      model: 'Documents',
+      key: 'id'
+    }
   },
   identityNumber: {
     type: DataTypes.STRING,
@@ -26,6 +30,5 @@ const IdentityDocument = sequelize.define('IdentityDocument', {
   }
 });
 
-IdentityDocument.belongsTo(Document);
 
 module.exports = IdentityDocument;

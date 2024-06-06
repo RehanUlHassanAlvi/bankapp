@@ -1,7 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
-const User = require('./Users');
-const Document = require('./Document');
+const Document = require('./Documents');
 
 const ProofOfResidence = sequelize.define('ProofOfResidence', {
   id: {
@@ -9,13 +8,13 @@ const ProofOfResidence = sequelize.define('ProofOfResidence', {
     autoIncrement: true,
     primaryKey: true
   },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
   documentId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false ,
+    references: {
+      model: 'Documents',
+      key: 'id'
+    }
   },
   residentialDetails: {
     type: DataTypes.STRING,
@@ -70,6 +69,5 @@ const ProofOfResidence = sequelize.define('ProofOfResidence', {
   }
 });
 
-ProofOfResidence.belongsTo(Document);
 
 module.exports = ProofOfResidence;

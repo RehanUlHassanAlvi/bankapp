@@ -1,11 +1,16 @@
 const express = require('express');
-// const { } = require('../controllers/docController');
+const {
+  saveDocument,
+  deleteDocument,
+  getDocuments,
+  getDocumentById
+} = require('../controllers/docController');
 
 const router = express.Router();
 
-// router.post('/register', register);
-// router.post('/login', login);
-// router.post('/verify-otp', verifyOtp);
-// router.post('/resend-otp', resendOtp);
+router.post('/add', saveDocument);
+router.delete('/delete/:id', deleteDocument);
+router.get('/', getDocuments);
+router.get('/:id', getDocumentById);
 
 module.exports = router;

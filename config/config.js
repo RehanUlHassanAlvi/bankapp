@@ -11,4 +11,8 @@ sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error: ' + err));
 
+  sequelize.sync()
+  .then(() => console.log('UserDetails table created'))
+  .catch(err => console.log('Error: ' + err));
+
 module.exports = sequelize;

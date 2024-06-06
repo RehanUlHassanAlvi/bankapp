@@ -1,9 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
-const DocumentType = require('./DocumentType');
-const User = require('./Users');
 
-const Document = sequelize.define('Document', {
+const Document = sequelize.define('Documents', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
@@ -11,15 +9,23 @@ const Document = sequelize.define('Document', {
   },
   userId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'Users',
+      key: 'id'
+    }
   },
   documentTypeId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: 'DocumentTypes',
+      key: 'id'
+    }
   },
   url: {
     type: DataTypes.STRING,
-    allowNull: false
+    allowNull: true
   },
   status: {
     type: DataTypes.ENUM('pending', 'approved', 'rejected'),
@@ -34,12 +40,5 @@ const Document = sequelize.define('Document', {
     defaultValue: DataTypes.NOW
   }
 });
-
-Document.belongsTo(DocumentType, { foreignKey: 'documentTypeId' });
-Document.belongsTo(User, { foreignKey: 'userId' });
-
-sequelize.sync()
-  .then(() => console.log('Documents table created'))
-  .catch(err => console.log('Error: ' + err));
 
 module.exports = Document;

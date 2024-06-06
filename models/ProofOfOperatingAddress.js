@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
-const Document = require('./Document');
+const Document = require('./Documents');
 
 const ProofOfOperatingAddress = sequelize.define('ProofOfOperatingAddress', {
   id: {
@@ -10,7 +10,11 @@ const ProofOfOperatingAddress = sequelize.define('ProofOfOperatingAddress', {
   },
   documentId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false ,
+    references: {
+      model: 'Documents',
+      key: 'id'
+    }
   },
   residentialDetails: {
     type: DataTypes.STRING,
@@ -34,6 +38,5 @@ const ProofOfOperatingAddress = sequelize.define('ProofOfOperatingAddress', {
   }
 });
 
-ProofOfOperatingAddress.belongsTo(Document);
 
 module.exports = ProofOfOperatingAddress;

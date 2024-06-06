@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
-const Document = require('./Document');
+const Document = require('./Documents');
 
 const CertificateOfIncorporation = sequelize.define('CertificateOfIncorporation', {
   id: {
@@ -10,7 +10,11 @@ const CertificateOfIncorporation = sequelize.define('CertificateOfIncorporation'
   },
   documentId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false ,
+    references: {
+      model: 'Documents',
+      key: 'id'
+    }
   },
   companyNumber: {
     type: DataTypes.STRING,
@@ -21,7 +25,5 @@ const CertificateOfIncorporation = sequelize.define('CertificateOfIncorporation'
     allowNull: false
   }
 });
-
-CertificateOfIncorporation.belongsTo(Document);
 
 module.exports = CertificateOfIncorporation;

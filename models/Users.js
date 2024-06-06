@@ -1,7 +1,12 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
 
-const User = sequelize.define('Users', {
+const User = sequelize.define('User', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
+  },
   password: {
     type: DataTypes.STRING,
     allowNull: false
@@ -25,12 +30,8 @@ const User = sequelize.define('Users', {
   },
   isOtpVerified: {
     type: DataTypes.BOOLEAN,
-    defaultValue: false,
+    defaultValue: false
   }
 });
-
-sequelize.sync()
-  .then(() => console.log('User table created'))
-  .catch(err => console.log('Error: ' + err));
 
 module.exports = User;
