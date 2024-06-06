@@ -11,8 +11,16 @@ sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error: ' + err));
 
-  sequelize.sync()
-  .then(() => console.log('UserDetails table created'))
+const syncOptions = process.env.NODE_ENV === 'dev' ? { force: true } : { alter: true };
+
+sequelize.sync(syncOptions)
+  .then(() => {
+    if (syncOptions.force) {
+      console.log('UserDetails table created and data reset');
+    } else {
+      console.log('UserDetails table synchronized without data reset');
+    }
+  })
   .catch(err => console.log('Error: ' + err));
 
 module.exports = sequelize;
