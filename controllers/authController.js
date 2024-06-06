@@ -11,7 +11,7 @@ const register = async (req, res) => {
     // Check if user already exists
     const userExists = await User.findOne({ where: { email } });
     if (userExists) {
-      return res.status(400).json({ message: 'User already exists' });
+      return res.status(400).json({ message: 'A User with this Email already Exists!' });
     }
 
     // Generate OTP
