@@ -179,5 +179,68 @@ const updateKycStatus = async (req,res) => {
     res.status(500).json({ error: err.message });
   }
 };
+const forgotPassword = async (req, res) => {
+  const { email } = req.body;
 
-module.exports = { register, login, verifyOtp, resendOtp,addKyc,updateKycStatus };
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Generate OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
+
+    user.otp = otp;
+    user.otpExpiry = otpExpiry;
+    user.isOtpVerified = false; // Reset OTP verification status
+    await user.save();
+
+    // Send OTP via email
+    await sendEmail(user.email, 'Password Reset OTP', `Your OTP code for password reset is ${otp}`);
+
+    res.status(200).json({ message: 'OTP sent to your email for password reset' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+const resetPassword = async (req, res) => {
+  const { email, otp, newPassword } = req.body;
+
+  try {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Verify OTP
+    if (user.otp !== otp) {
+      return res.status(400).json({ message: 'Invalid OTP' });
+    }
+
+    if (user.otpExpiry < new Date()) {
+      return res.status(400).json({ message: 'OTP expired' });
+    }
+
+    // Hash the new password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+    // Update user with new password and clear OTP fields
+    user.password = hashedPassword;
+    user.otp = null;
+    user.otpExpiry = null;
+    user.isOtpVerified = true;
+    await user.save();
+
+    res.status(200).json({ message: 'Password reset successful' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { register, login, verifyOtp, resendOtp, addKyc, updateKycStatus, forgotPassword, resetPassword };
