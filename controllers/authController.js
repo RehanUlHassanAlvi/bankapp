@@ -83,6 +83,11 @@ const login = async (req, res) => {
     if (!user.isOtpVerified) {
       return res.status(400).json({ message: 'OTP not verified' });
     }
+    
+    // Check if OTP is verified
+    if (!user.isKycVerified) {
+      return res.status(400).json({ message: 'KYC not verified' });
+    }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -197,6 +202,8 @@ const updateKycStatus = async (req, res) => {
 
     user.isKycVerified = true;
     await user.save();
+    await sendEmail(user.email, 'Your KYC is Verified', `Your Request for KYC is approved you can now Login!`);
+
 
     res.status(200).json({ message: 'KYC updated Successfully' });
   } catch (err) {
