@@ -5,12 +5,13 @@ const {
   getDocuments,
   getDocumentById
 } = require('../controllers/docController');
+const authenticateToken = require('../middleware/authMiddleware'); 
 
 const router = express.Router();
 
-router.post('/add', saveDocument);
-router.delete('/delete/:id', deleteDocument);
-router.get('/', getDocuments);
-router.get('/:id', getDocumentById);
+router.post('/add',authenticateToken, saveDocument);
+router.delete('/delete/:id',authenticateToken, deleteDocument);
+router.get('/',authenticateToken, getDocuments);
+router.get('/:id',authenticateToken, getDocumentById);
 
 module.exports = router;

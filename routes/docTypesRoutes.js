@@ -8,11 +8,12 @@ const {
 } = require('../controllers/docTypeController');
 
 const router = express.Router();
+const authenticateToken = require('../middleware/authMiddleware'); 
 
-router.post('/add', addDocumentType);
-router.put('/update/:id', updateDocumentType);
-router.delete('/delete/:id', deleteDocumentType);
-router.get('/', getDocumentTypes);
-router.get('/:id', getDocumentTypeById);
+router.post('/add',authenticateToken, addDocumentType);
+router.put('/update/:id', authenticateToken,updateDocumentType);
+router.delete('/delete/:id',authenticateToken, deleteDocumentType);
+router.get('/', authenticateToken,getDocumentTypes);
+router.get('/:id',authenticateToken, getDocumentTypeById);
 
 module.exports = router;

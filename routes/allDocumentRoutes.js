@@ -9,47 +9,48 @@ const {
   proofOfResidenceController,
   taxClearanceController
 } = require('../controllers/documentControllers');
+const authenticateToken = require('../middleware/authMiddleware'); 
 
 // Certificate of Incorporation Routes
-router.get('/certificate-of-incorporation/:id', certificateOfIncorporationController.getCertificateOfIncorporationById);
-router.get('/certificate-of-incorporation', certificateOfIncorporationController.getAllCertificatesOfIncorporation);
-router.post('/certificate-of-incorporation', certificateOfIncorporationController.saveCertificateOfIncorporation);
-router.put('/certificate-of-incorporation/:id', certificateOfIncorporationController.saveCertificateOfIncorporation);
-router.delete('/certificate-of-incorporation/:id', certificateOfIncorporationController.deleteCertificateOfIncorporation);
+router.get('/certificate-of-incorporation/:id',authenticateToken, certificateOfIncorporationController.getCertificateOfIncorporationById);
+router.get('/certificate-of-incorporation', authenticateToken,certificateOfIncorporationController.getAllCertificatesOfIncorporation);
+router.post('/certificate-of-incorporation', authenticateToken,certificateOfIncorporationController.saveCertificateOfIncorporation);
+router.put('/certificate-of-incorporation/:id',authenticateToken, certificateOfIncorporationController.saveCertificateOfIncorporation);
+router.delete('/certificate-of-incorporation/:id', authenticateToken,certificateOfIncorporationController.deleteCertificateOfIncorporation);
 
 // Identity Document Routes
-router.get('/identity-document/:id', identityDocumentController.getIdentityDocumentById);
-router.get('/identity-document', identityDocumentController.getAllIdentityDocuments);
-router.post('/identity-document', identityDocumentController.saveIdentityDocument);
-router.put('/identity-document/:id', identityDocumentController.saveIdentityDocument);
-router.delete('/identity-document/:id', identityDocumentController.deleteIdentityDocument);
+router.get('/identity-document/:id',authenticateToken, identityDocumentController.getIdentityDocumentById);
+router.get('/identity-document',authenticateToken, identityDocumentController.getAllIdentityDocuments);
+router.post('/identity-document', authenticateToken,identityDocumentController.saveIdentityDocument);
+router.put('/identity-document/:id',authenticateToken, identityDocumentController.saveIdentityDocument);
+router.delete('/identity-document/:id',authenticateToken, identityDocumentController.deleteIdentityDocument);
 
 // Proof of Income Routes
-router.get('/proof-of-income/:id', proofOfIncomeController.getProofOfIncomeById);
-router.get('/proof-of-income', proofOfIncomeController.getAllProofsOfIncome);
-router.post('/proof-of-income', proofOfIncomeController.saveProofOfIncome);
-router.put('/proof-of-income/:id', proofOfIncomeController.saveProofOfIncome);
-router.delete('/proof-of-income/:id', proofOfIncomeController.deleteProofOfIncome);
+router.get('/proof-of-income/:id',authenticateToken, proofOfIncomeController.getProofOfIncomeById);
+router.get('/proof-of-income',authenticateToken, proofOfIncomeController.getAllProofsOfIncome);
+router.post('/proof-of-income',authenticateToken, proofOfIncomeController.saveProofOfIncome);
+router.put('/proof-of-income/:id',authenticateToken, proofOfIncomeController.saveProofOfIncome);
+router.delete('/proof-of-income/:id',authenticateToken, proofOfIncomeController.deleteProofOfIncome);
 
 // Proof of Operating Address Routes
-router.get('/proof-of-operating-address/:id', proofOfOperatingAddressController.getProofOfOperatingAddressById);
-router.get('/proof-of-operating-address', proofOfOperatingAddressController.getAllProofsOfOperatingAddress);
-router.post('/proof-of-operating-address', proofOfOperatingAddressController.saveProofOfOperatingAddress);
-router.put('/proof-of-operating-address/:id', proofOfOperatingAddressController.saveProofOfOperatingAddress);
-router.delete('/proof-of-operating-address/:id', proofOfOperatingAddressController.deleteProofOfOperatingAddress);
+router.get('/proof-of-operating-address/:id', authenticateToken,proofOfOperatingAddressController.getProofOfOperatingAddressById);
+router.get('/proof-of-operating-address', authenticateToken,proofOfOperatingAddressController.getAllProofsOfOperatingAddress);
+router.post('/proof-of-operating-address', authenticateToken,proofOfOperatingAddressController.saveProofOfOperatingAddress);
+router.put('/proof-of-operating-address/:id', authenticateToken,proofOfOperatingAddressController.saveProofOfOperatingAddress);
+router.delete('/proof-of-operating-address/:id',authenticateToken, proofOfOperatingAddressController.deleteProofOfOperatingAddress);
 
 // Proof of Residence Routes
-router.get('/proof-of-residence/:id', proofOfResidenceController.getProofOfResidenceById);
-router.get('/proof-of-residence', proofOfResidenceController.getAllProofsOfResidence);
-router.post('/proof-of-residence', proofOfResidenceController.saveProofOfResidence);
-router.put('/proof-of-residence/:id', proofOfResidenceController.saveProofOfResidence);
-router.delete('/proof-of-residence/:id', proofOfResidenceController.deleteProofOfResidence);
+router.get('/proof-of-residence/:id', authenticateToken,proofOfResidenceController.getProofOfResidenceById);
+router.get('/proof-of-residence',authenticateToken, proofOfResidenceController.getAllProofsOfResidence);
+router.post('/proof-of-residence', authenticateToken,proofOfResidenceController.saveProofOfResidence);
+router.put('/proof-of-residence/:id',authenticateToken, proofOfResidenceController.saveProofOfResidence);
+router.delete('/proof-of-residence/:id', authenticateToken,proofOfResidenceController.deleteProofOfResidence);
 
 // Tax Clearance Routes
-router.get('/tax-clearance/:id', taxClearanceController.getTaxClearanceById);
-router.get('/tax-clearance', taxClearanceController.getAllTaxClearances);
-router.post('/tax-clearance', taxClearanceController.saveTaxClearance);
-router.put('/tax-clearance/:id', taxClearanceController.saveTaxClearance);
-router.delete('/tax-clearance/:id', taxClearanceController.deleteTaxClearance);
+router.get('/tax-clearance/:id',authenticateToken, taxClearanceController.getTaxClearanceById);
+router.get('/tax-clearance', authenticateToken,taxClearanceController.getAllTaxClearances);
+router.post('/tax-clearance', authenticateToken,taxClearanceController.saveTaxClearance);
+router.put('/tax-clearance/:id', authenticateToken,taxClearanceController.saveTaxClearance);
+router.delete('/tax-clearance/:id', authenticateToken,taxClearanceController.deleteTaxClearance);
 
 module.exports = router;

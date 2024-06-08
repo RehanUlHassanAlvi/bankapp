@@ -16,7 +16,7 @@ const register = async (req, res) => {
 
     // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 100); // OTP valid for 10 minutes
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
 
     // Hash the password
     const salt = await bcrypt.genSalt(10);
@@ -33,7 +33,6 @@ const register = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
 
 const verifyOtp = async (req, res) => {
   const { email, otp } = req.body;
@@ -91,13 +90,40 @@ const login = async (req, res) => {
       return res.status(400).json({ message: 'Invalid credentials' });
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const refreshToken = jwt.sign({ id: user.id }, process.env.JWT_REFRESH_SECRET, { expiresIn: '7d' });
 
+    // Store the refresh token in the database
+    user.refreshToken = refreshToken;
+    await user.save();
 
-    res.status(200).json({ message: 'Login successful', token });
+    res.status(200).json({ message: 'Login successful', accessToken, refreshToken });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+const refreshToken = async (req, res) => {
+  const { token } = req.body;
+
+  if (!token) {
+    return res.status(401).json({ message: 'No token, authorization denied' });
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET);
+    const user = await User.findByPk(decoded.id);
+
+    if (!user || user.refreshToken !== token) {
+      return res.status(403).json({ message: 'Invalid refresh token' });
+    }
+
+    // Generate a new access token
+    const accessToken = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+
+    res.status(200).json({ accessToken });
+  } catch (err) {
+    res.status(403).json({ message: 'Token is not valid' });
   }
 };
 
@@ -113,7 +139,7 @@ const resendOtp = async (req, res) => {
 
     // Generate new OTP
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    const otpExpiry = new Date(Date.now() + 10 * 60 * 100); // OTP valid for 10 minutes
+    const otpExpiry = new Date(Date.now() + 10 * 60 * 1000); // OTP valid for 10 minutes
 
     user.otp = otp;
     user.otpExpiry = otpExpiry;
@@ -129,56 +155,55 @@ const resendOtp = async (req, res) => {
   }
 };
 
+const addKyc = async (req, res) => {
+  const { kycUrl } = req.body;
+  const userId = req.user.id;  // Get user ID from the decoded token
 
-
-const addKyc = async (req,res) => {
-
-  const { email, kycUrl } = req.body;
-  const user = await User.findOne({ where: { email } });
-  
   try {
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     // Check if OTP is verified
     if (!user.isOtpVerified) {
       return res.status(400).json({ message: 'OTP not verified' });
     }
 
-   user.kycImageURL=kycUrl;
+    user.kycImageURL = kycUrl;
     await user.save();
-    
+
     res.status(200).json({ message: 'KYC added Successfully, Admin will verify' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
+const updateKycStatus = async (req, res) => {
+  const userId = req.user.id;  // Get user ID from the decoded token
 
-const updateKycStatus = async (req,res) => {
-
-  const { email } = req.body;
-  const user = await User.findOne({ where: { email } });
-  
   try {
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
     // Check if OTP is verified
     if (!user.isOtpVerified) {
       return res.status(400).json({ message: 'OTP not verified' });
     }
 
-   user.isKycVerified=true;
+    user.isKycVerified = true;
     await user.save();
-    
+
     res.status(200).json({ message: 'KYC updated Successfully' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
+
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -234,7 +259,7 @@ const resetPassword = async (req, res) => {
     user.password = hashedPassword;
     user.otp = null;
     user.otpExpiry = null;
-    user.isOtpVerified = true;
+    user.isOtpVerified = true;  
     await user.save();
 
     res.status(200).json({ message: 'Password reset successful' });
@@ -243,4 +268,4 @@ const resetPassword = async (req, res) => {
   }
 };
 
-module.exports = { register, login, verifyOtp, resendOtp, addKyc, updateKycStatus, forgotPassword, resetPassword };
+module.exports = { register, login, verifyOtp, resendOtp, addKyc, updateKycStatus, forgotPassword, resetPassword, refreshToken };

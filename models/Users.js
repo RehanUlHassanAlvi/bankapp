@@ -39,6 +39,9 @@ const User = sequelize.define('User', {
   kycImageURL:{
     type: DataTypes.STRING,
     allowNull: true
+  }, refreshToken: {
+    type: DataTypes.STRING,
+    allowNull: true
   }
 });
 
