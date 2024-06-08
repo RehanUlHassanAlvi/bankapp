@@ -161,11 +161,10 @@ const resendOtp = async (req, res) => {
 };
 
 const addKyc = async (req, res) => {
-  const { kycUrl } = req.body;
-  const userId = req.user.id;  // Get user ID from the decoded token
+  const { kycUrl,email } = req.body;
 
   try {
-    const user = await User.findByPk(userId);
+    const user = await User.findOne({ where: { email } });
 
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
