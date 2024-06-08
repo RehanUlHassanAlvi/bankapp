@@ -6,7 +6,6 @@ require('dotenv').config();
 
 const saveUserDetails = async (req, res) => {
   const {
-    password,
     name,
     gender,
     dob,
@@ -35,13 +34,6 @@ const saveUserDetails = async (req, res) => {
     if (!user.isOtpVerified) {
       return res.status(400).json({ message: 'OTP not verified' });
     }
-
-    const isMatch = await bcrypt.compare(password, user.password);
-
-    if (!isMatch) {
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
     // Check if user details already exist
     const userDetails = await UserDetails.findOne({ where: { userId: user.id } });
 
