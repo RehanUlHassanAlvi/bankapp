@@ -27,9 +27,8 @@ const getAllIdentityDocuments = async (req, res) => {
 
 const saveIdentityDocument = async (req, res) => {
   try {
-    const { id,identityNumber, expiryDate, attachmentUrl } = req.body;
+    const { id,identityDocument,identityNumber, expiryDate, attachmentUrl } = req.body;
 
-    let identityDocument;
     if (id) {
       identityDocument = await IdentityDocument.findByPk(id);
       if (identityDocument) {
