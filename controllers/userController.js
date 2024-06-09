@@ -100,4 +100,21 @@ const getUserDetails = async (req, res) => {
   }
 };
 
-module.exports = { saveUserDetails, getUserDetails };
+
+const getDocumentsAgainstAUser = async (req, res) => {
+  const userId = req.user.id; // Get user ID from the authenticated token
+
+  try {
+    const docs = await Document.findAll({ where: { userId } });
+
+    if (!docs) {
+      return res.status(404).json({ message: 'No Documents Found Against this user' });
+    }
+
+    res.status(200).json(docs);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+module.exports = { saveUserDetails, getUserDetails,getDocumentsAgainstAUser };

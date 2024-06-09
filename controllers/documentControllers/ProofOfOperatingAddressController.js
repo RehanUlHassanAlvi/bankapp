@@ -1,4 +1,5 @@
 const { ProofOfOperatingAddress } = require('../../models');
+const {createDocument}=require('../docController')
 
 // Get a specific proof of operating address by ID
 const getProofOfOperatingAddressById = async (req, res) => {
@@ -24,23 +25,26 @@ const getAllProofsOfOperatingAddress = async (req, res) => {
   }
 };
 
-// Save a new proof of operating address or update an existing one
 const saveProofOfOperatingAddress = async (req, res) => {
   try {
-    const { id, ...proofOfOperatingAddressData } = req.body;
+    const userId = req.user.id; // Get userId from the authenticated user
+    const { id, documentId, residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl } = req.body;
 
     let proofOfOperatingAddress;
     if (id) {
       proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(id);
       if (proofOfOperatingAddress) {
-        await proofOfOperatingAddress.update(proofOfOperatingAddressData);
+        await proofOfOperatingAddress.update({ documentId, residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl });
         res.json({ message: 'Proof of Operating Address updated successfully', proofOfOperatingAddress });
       } else {
         res.status(404).json({ message: 'Proof of Operating Address not found' });
       }
     } else {
-      proofOfOperatingAddress = await ProofOfOperatingAddress.create(proofOfOperatingAddressData);
-      res.status(201).json({ message: 'Proof of Operating Address created successfully', proofOfOperatingAddress });
+      // Save the document for the document type
+      const document = await createDocument(userId,4);
+      documentId=doc.id
+      proofOfOperatingAddress = await ProofOfOperatingAddress.create({ documentId, residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl });
+      res.status(201).json({ message: 'Proof of Operating Address created successfully', proofOfOperatingAddress, document });
     }
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });

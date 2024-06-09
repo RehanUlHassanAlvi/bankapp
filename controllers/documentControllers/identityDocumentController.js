@@ -1,9 +1,10 @@
 const { IdentityDocument } = require('../../models');
+const {createDocument}=require('../docController')
 
 // Get a specific identity document by ID
 const getIdentityDocumentById = async (req, res) => {
   try {
-    const identityDocument = await IdentityDocument.findByPk(req.params.id);
+    const identityDocument = await IdentityDocument.findByPk(req.user.id);
     if (identityDocument) {
       res.json(identityDocument);
     } else {
@@ -24,22 +25,23 @@ const getAllIdentityDocuments = async (req, res) => {
   }
 };
 
-// Save a new identity document or update an existing one
 const saveIdentityDocument = async (req, res) => {
   try {
-    const { id, ...identityDocumentData } = req.body;
+    const { id,identityNumber, expiryDate, attachmentUrl } = req.body;
 
     let identityDocument;
     if (id) {
       identityDocument = await IdentityDocument.findByPk(id);
       if (identityDocument) {
-        await identityDocument.update(identityDocumentData);
+        await identityDocument.update({ identityNumber, expiryDate, attachmentUrl });
         res.json({ message: 'Identity Document updated successfully', identityDocument });
       } else {
         res.status(404).json({ message: 'Identity Document not found' });
       }
     } else {
-      identityDocument = await IdentityDocument.create(identityDocumentData);
+       let doc=await createDocument(req.user.id,1); 
+       documentId=doc.id
+      identityDocument = await IdentityDocument.create({ documentId, identityNumber, expiryDate, attachmentUrl });
       res.status(201).json({ message: 'Identity Document created successfully', identityDocument });
     }
   } catch (error) {

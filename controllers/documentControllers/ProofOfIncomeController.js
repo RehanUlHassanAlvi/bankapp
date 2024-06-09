@@ -1,4 +1,5 @@
 const { ProofOfIncome } = require('../../models');
+const {createDocument}=require('../docController')
 
 // Get a specific proof of income by ID
 const getProofOfIncomeById = async (req, res) => {
@@ -24,29 +25,32 @@ const getAllProofsOfIncome = async (req, res) => {
   }
 };
 
-// Save a new proof of income or update an existing one
 const saveProofOfIncome = async (req, res) => {
   try {
-    const { id, ...proofOfIncomeData } = req.body;
+    const userId = req.user.id; // Get userId from the authenticated user
+    const { id, documentId, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage } = req.body;
 
     let proofOfIncome;
     if (id) {
       proofOfIncome = await ProofOfIncome.findByPk(id);
       if (proofOfIncome) {
-        await proofOfIncome.update(proofOfIncomeData);
+        await proofOfIncome.update({ documentId, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage });
         res.json({ message: 'Proof of Income updated successfully', proofOfIncome });
       } else {
         res.status(404).json({ message: 'Proof of Income not found' });
       }
     } else {
-      proofOfIncome = await ProofOfIncome.create(proofOfIncomeData);
-      res.status(201).json({ message: 'Proof of Income created successfully', proofOfIncome });
+      // Save the document for the document type
+      const document = await saveDocumentForDocumentType(userId,3);
+      let doc=await createDocument(req.user.id,3); 
+      documentId=doc.id
+      proofOfIncome = await ProofOfIncome.create({ documentId, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage });
+      res.status(201).json({ message: 'Proof of Income created successfully', proofOfIncome, document });
     }
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
 };
-
 // Delete a proof of income
 const deleteProofOfIncome = async (req, res) => {
   try {

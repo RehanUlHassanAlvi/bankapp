@@ -1,4 +1,5 @@
 const { CertificateOfIncorporation } = require('../../models');
+const { createDocument } = require('../docController');
 
 // Get a specific certificate of incorporation by ID
 const getCertificateOfIncorporationById = async (req, res) => {
@@ -24,23 +25,27 @@ const getAllCertificatesOfIncorporation = async (req, res) => {
   }
 };
 
-// Save a new certificate of incorporation or update an existing one
 const saveCertificateOfIncorporation = async (req, res) => {
   try {
-    const { id, ...certificateData } = req.body;
+    const userId = req.user.id; // Get userId from the authenticated user
+    const { id, companyNumber, attachmentUrl } = req.body;
 
     let certificate;
     if (id) {
       certificate = await CertificateOfIncorporation.findByPk(id);
       if (certificate) {
-        await certificate.update(certificateData);
+        await certificate.update({ documentId, companyNumber, attachmentUrl });
         res.json({ message: 'Certificate of Incorporation updated successfully', certificate });
       } else {
         res.status(404).json({ message: 'Certificate of Incorporation not found' });
       }
     } else {
-      certificate = await CertificateOfIncorporation.create(certificateData);
-      res.status(201).json({ message: 'Certificate of Incorporation created successfully', certificate });
+      // Save the document for the document type
+      const document = await createDocument(userId,2);
+      let doc=await createDocument(req.user.id,1); 
+      documentId=doc.id
+      certificate = await CertificateOfIncorporation.create({ documentId, companyNumber, attachmentUrl });
+      res.status(201).json({ message: 'Certificate of Incorporation created successfully', certificate, document });
     }
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });

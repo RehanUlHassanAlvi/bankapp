@@ -1,6 +1,73 @@
 const { User,Document,DocumentType } = require('../models');
 require('dotenv').config();
 
+const createDocument = async (userId,documentTypeId) => {
+ let status='pending'
+ let url=''
+  try {
+    let document;
+
+    // If id parameter is provided, it's an update operation
+    if (id) {
+      document = await Document.findByPk(id);
+
+      if (!document) {
+        throw new Error('Document not found');
+      }
+
+      // Check if user exists
+      if (userId) {
+        const user = await User.findByPk(userId);
+        if (!user) {
+          throw new Error('User not found');
+        }
+      }
+
+      // Check if document type exists
+      if (documentTypeId) {
+        const documentType = await DocumentType.findByPk(documentTypeId);
+        if (!documentType) {
+          throw new Error('Document type not found');
+        }
+      }
+
+      // Update document fields
+      document.userId = userId || document.userId;
+      document.documentTypeId = documentTypeId || document.documentTypeId;
+      document.url = url || document.url;
+      document.status = status || document.status;
+
+      await document.save();
+      return document;
+    } else { // If id parameter is not provided, it's an add operation
+      // Check if user exists
+      const user = await User.findByPk(userId);
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Check if document type exists
+      const documentType = await DocumentType.findByPk(documentTypeId);
+      if (!documentType) {
+        throw new Error('Document type not found');
+      }
+
+      // Create the document
+      const newDocument = await Document.create({
+        userId,
+        documentTypeId,
+        url,
+        status
+      });
+
+      return newDocument;
+    }
+  } catch (error) {
+    throw new Error('Error adding or updating document: ' + error.message);
+  }
+};
+
+
 const saveDocument = async (req, res) => {
   const { id } = req.params; // Get document id from URL parameters
   const { userId, documentTypeId, url, status } = req.body; // Get document data from request body
@@ -129,5 +196,4 @@ module.exports = {
   saveDocument,
   deleteDocument,
   getDocuments,
-  getDocumentById
-};
+  getDocumentById,createDocument}

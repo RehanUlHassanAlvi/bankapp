@@ -1,4 +1,5 @@
 const { ProofOfResidence } = require('../../models');
+const { createDocument } = require('../docController');
 
 // Get a specific proof of residence by ID
 const getProofOfResidenceById = async (req, res) => {
@@ -24,29 +25,35 @@ const getAllProofsOfResidence = async (req, res) => {
   }
 };
 
-// Save a new proof of residence or update an existing one
 const saveProofOfResidence = async (req, res) => {
   try {
-    const { id, ...proofOfResidenceData } = req.body;
+    const userId = req.user.id; // Get userId from the authenticated user
+    const { id, documentId, residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation } = req.body;
 
     let proofOfResidence;
     if (id) {
       proofOfResidence = await ProofOfResidence.findByPk(id);
       if (proofOfResidence) {
-        await proofOfResidence.update(proofOfResidenceData);
+        await proofOfResidence.update({
+          documentId, residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation
+        });
         res.json({ message: 'Proof of Residence updated successfully', proofOfResidence });
       } else {
         res.status(404).json({ message: 'Proof of Residence not found' });
       }
     } else {
-      proofOfResidence = await ProofOfResidence.create(proofOfResidenceData);
-      res.status(201).json({ message: 'Proof of Residence created successfully', proofOfResidence });
+      // Save the document for the document type
+      const document = await createDocument(userId,5);
+      documentId=doc.id
+      proofOfResidence = await ProofOfResidence.create({
+        documentId, residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation
+      });
+      res.status(201).json({ message: 'Proof of Residence created successfully', proofOfResidence, document });
     }
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
   }
 };
-
 // Delete a proof of residence
 const deleteProofOfResidence = async (req, res) => {
   try {

@@ -1,4 +1,5 @@
 const { TaxClearance } = require('../../models');
+const { createDocument } = require('../docController');
 
 // Get a specific tax clearance by ID
 const getTaxClearanceById = async (req, res) => {
@@ -24,23 +25,26 @@ const getAllTaxClearances = async (req, res) => {
   }
 };
 
-// Save a new tax clearance or update an existing one
 const saveTaxClearance = async (req, res) => {
   try {
-    const { id, ...taxClearanceData } = req.body;
+    const userId = req.user.id; // Get userId from the authenticated user
+    const { id, documentId, expiryDate, attachmentUrl } = req.body;
 
     let taxClearance;
     if (id) {
       taxClearance = await TaxClearance.findByPk(id);
       if (taxClearance) {
-        await taxClearance.update(taxClearanceData);
+        await taxClearance.update({ documentId, expiryDate, attachmentUrl });
         res.json({ message: 'Tax Clearance updated successfully', taxClearance });
       } else {
         res.status(404).json({ message: 'Tax Clearance not found' });
       }
     } else {
-      taxClearance = await TaxClearance.create(taxClearanceData);
-      res.status(201).json({ message: 'Tax Clearance created successfully', taxClearance });
+      // Save the document for the document type
+      const document = await createDocument(userId,6);
+      documentId=doc.id
+      taxClearance = await TaxClearance.create({ documentId, expiryDate, attachmentUrl });
+      res.status(201).json({ message: 'Tax Clearance created successfully', taxClearance, document });
     }
   } catch (error) {
     res.status(500).json({ message: 'Server error', error });
