@@ -28,32 +28,39 @@ const getAllProofsOfResidence = async (req, res) => {
 const saveProofOfResidence = async (req, res) => {
   try {
     const userId = req.user.id; // Get userId from the authenticated user
-    const { id, documentId, residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation } = req.body;
+    const { id, residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation } = req.body;
 
     let proofOfResidence;
+
     if (id) {
+      // If an id is provided, update the existing ProofOfResidence
       proofOfResidence = await ProofOfResidence.findByPk(id);
       if (proofOfResidence) {
         await proofOfResidence.update({
-          documentId, residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation
+          residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation
         });
         res.json({ message: 'Proof of Residence updated successfully', proofOfResidence });
       } else {
         res.status(404).json({ message: 'Proof of Residence not found' });
       }
     } else {
+      // If no id is provided, create a new ProofOfResidence
+      console.log('Processing user:', userId);
       // Save the document for the document type
-      const document = await createDocument(userId,5);
-      documentId=doc.id
+      const document = await createDocument(userId, 5);
+      console.log('Document ID:', document.id);
+      
       proofOfResidence = await ProofOfResidence.create({
-        documentId, residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation
+        documentId: document.id, residentialDetails, durationOfStay, specificDetails, physicalAddress, townCity, attachmentFrontPage, attachmentBackPage, plotNumber, leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, attachmentAllPages, companyName, designation, affidavitDesignation
       });
       res.status(201).json({ message: 'Proof of Residence created successfully', proofOfResidence, document });
     }
   } catch (error) {
+    console.error('Error saving Proof of Residence:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
 // Delete a proof of residence
 const deleteProofOfResidence = async (req, res) => {
   try {

@@ -24,33 +24,38 @@ const getAllProofsOfIncome = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
-
 const saveProofOfIncome = async (req, res) => {
   try {
     const userId = req.user.id; // Get userId from the authenticated user
-    const { id, documentId, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage } = req.body;
+    const { id, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage } = req.body;
 
     let proofOfIncome;
+
     if (id) {
+      // If an id is provided, update the existing ProofOfIncome
       proofOfIncome = await ProofOfIncome.findByPk(id);
       if (proofOfIncome) {
-        await proofOfIncome.update({ documentId, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage });
+        await proofOfIncome.update({ sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage });
         res.json({ message: 'Proof of Income updated successfully', proofOfIncome });
       } else {
         res.status(404).json({ message: 'Proof of Income not found' });
       }
     } else {
+      // If no id is provided, create a new ProofOfIncome
+      console.log('Processing user:', userId);
       // Save the document for the document type
-      const document = await saveDocumentForDocumentType(userId,3);
-      let doc=await createDocument(req.user.id,3); 
-      documentId=doc.id
-      proofOfIncome = await ProofOfIncome.create({ documentId, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage });
+      const document = await saveDocumentForDocumentType(userId, 3);
+      console.log('Document ID:', document.id);
+      
+      proofOfIncome = await ProofOfIncome.create({ documentId: document.id, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage });
       res.status(201).json({ message: 'Proof of Income created successfully', proofOfIncome, document });
     }
   } catch (error) {
+    console.error('Error saving Proof of Income:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
 // Delete a proof of income
 const deleteProofOfIncome = async (req, res) => {
   try {

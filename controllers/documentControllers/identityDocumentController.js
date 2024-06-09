@@ -24,26 +24,32 @@ const getAllIdentityDocuments = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
-
 const saveIdentityDocument = async (req, res) => {
   try {
-    const { id,identityDocument,identityNumber, expiryDate, attachmentUrl } = req.body;
+    const { id, documentId, identityNumber, expiryDate, attachmentUrl } = req.body;
+
+    let identityDocument;
 
     if (id) {
+      // If an id is provided, update the existing IdentityDocument
       identityDocument = await IdentityDocument.findByPk(id);
       if (identityDocument) {
-        await identityDocument.update({ identityNumber, expiryDate, attachmentUrl });
+        await identityDocument.update({ identityNumber,documentId, expiryDate, attachmentUrl });
         res.json({ message: 'Identity Document updated successfully', identityDocument });
       } else {
         res.status(404).json({ message: 'Identity Document not found' });
       }
     } else {
-       let doc=await createDocument(req.user.id,1); 
-       documentId=doc.id
-      identityDocument = await IdentityDocument.create({ documentId, identityNumber, expiryDate, attachmentUrl });
-      res.status(201).json({ message: 'Identity Document created successfully', identityDocument });
+      // If no id is provided, create a new IdentityDocument
+      console.log('processing user:', req.user.id);
+      let doc = await createDocument(req.user.id, 1);
+      console.log('documentID:', doc.dataValues.id);
+      let newIdentityDocument = await IdentityDocument.create({ documentId: doc.dataValues.id, identityNumber, expiryDate, attachmentUrl });
+      console.log('Identity Document:', newIdentityDocument);
+      res.status(201).json({ message: 'Identity Document created successfully', identityDocument: newIdentityDocument });
     }
   } catch (error) {
+    console.error('Error saving IdentityDocument:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };

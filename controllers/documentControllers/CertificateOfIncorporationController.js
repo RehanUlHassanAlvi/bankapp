@@ -31,26 +31,32 @@ const saveCertificateOfIncorporation = async (req, res) => {
     const { id, companyNumber, attachmentUrl } = req.body;
 
     let certificate;
+
     if (id) {
+      // If an id is provided, update the existing CertificateOfIncorporation
       certificate = await CertificateOfIncorporation.findByPk(id);
       if (certificate) {
-        await certificate.update({ documentId, companyNumber, attachmentUrl });
+        await certificate.update({ companyNumber, attachmentUrl });
         res.json({ message: 'Certificate of Incorporation updated successfully', certificate });
       } else {
         res.status(404).json({ message: 'Certificate of Incorporation not found' });
       }
     } else {
+      // If no id is provided, create a new CertificateOfIncorporation
+      console.log('Processing user:', userId);
       // Save the document for the document type
-      const document = await createDocument(userId,2);
-      let doc=await createDocument(req.user.id,1); 
-      documentId=doc.id
-      certificate = await CertificateOfIncorporation.create({ documentId, companyNumber, attachmentUrl });
+      const document = await createDocument(userId, 2);
+      console.log('Document ID:', document.id);
+      
+      certificate = await CertificateOfIncorporation.create({ documentId: document.id, companyNumber, attachmentUrl });
       res.status(201).json({ message: 'Certificate of Incorporation created successfully', certificate, document });
     }
   } catch (error) {
+    console.error('Error saving Certificate of Incorporation:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
 
 // Delete a certificate of incorporation
 const deleteCertificateOfIncorporation = async (req, res) => {

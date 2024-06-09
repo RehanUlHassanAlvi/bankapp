@@ -5,42 +5,6 @@ const createDocument = async (userId,documentTypeId) => {
  let status='pending'
  let url=''
   try {
-    let document;
-
-    // If id parameter is provided, it's an update operation
-    if (id) {
-      document = await Document.findByPk(id);
-
-      if (!document) {
-        throw new Error('Document not found');
-      }
-
-      // Check if user exists
-      if (userId) {
-        const user = await User.findByPk(userId);
-        if (!user) {
-          throw new Error('User not found');
-        }
-      }
-
-      // Check if document type exists
-      if (documentTypeId) {
-        const documentType = await DocumentType.findByPk(documentTypeId);
-        if (!documentType) {
-          throw new Error('Document type not found');
-        }
-      }
-
-      // Update document fields
-      document.userId = userId || document.userId;
-      document.documentTypeId = documentTypeId || document.documentTypeId;
-      document.url = url || document.url;
-      document.status = status || document.status;
-
-      await document.save();
-      return document;
-    } else { // If id parameter is not provided, it's an add operation
-      // Check if user exists
       const user = await User.findByPk(userId);
       if (!user) {
         throw new Error('User not found');
@@ -59,9 +23,9 @@ const createDocument = async (userId,documentTypeId) => {
         url,
         status
       });
-
+      console.log('Document Type',documentTypeId, 'Created Against User:', userId)
       return newDocument;
-    }
+    
   } catch (error) {
     throw new Error('Error adding or updating document: ' + error.message);
   }
