@@ -36,13 +36,21 @@ const User = sequelize.define('User', {
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
-  kycImageURL:{
+  kycImageURL: {
     type: DataTypes.STRING,
     allowNull: true
-  }, refreshToken: {
+  },
+  refreshToken: {
     type: DataTypes.STRING,
     allowNull: true
   }
+}, {
+  indexes: [
+    {
+      unique: true,
+      fields: ['email']
+    }
+  ]
 });
 
 module.exports = User;

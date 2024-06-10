@@ -11,7 +11,7 @@ sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error: ' + err));
 
-const syncOptions = process.env.NODE_ENV === 'dev' ? { force: false } : { alter: false };
+const syncOptions = process.env.NODE_ENV === 'dev' ? { force: false } : { alter: true };
 
 sequelize.sync(syncOptions)
   .then(() => {
