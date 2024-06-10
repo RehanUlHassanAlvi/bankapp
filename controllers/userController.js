@@ -103,9 +103,10 @@ const getUserDetails = async (req, res) => {
 
 
 const getDocumentsAgainstAUser = async (req, res) => {
-  const userId = req.user.id; 
 
   try {
+    const userId = req.user.id; 
+
     const docs = await Document.findAll({ where: { userId } });
 
     if (!docs) {
