@@ -5,7 +5,7 @@ const caCert = Buffer.from(process.env.DB_CA_CERT, 'base64').toString('utf-8');
 
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
-  port: 25536,
+  port: process.env.DB_PORT,
   dialect: 'mysql',
   dialectModule: require('mysql2'),
   dialectOptions: {
@@ -18,17 +18,17 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
   pool: {
     max: 10,
     min: 0,
-    acquire: 60000, // 60 seconds
+    acquire: 60000,
     idle: 10000,
   },
-  connectTimeout: 60000, // 60 seconds
+  connectTimeout: 60000,
 });
 
 sequelize.authenticate()
   .then(() => console.log('Database connected...'))
   .catch(err => console.log('Error: ' + err));
 
-const syncOptions = process.env.NODE_ENV === 'dev' ? { force: false } : { alter: true };
+const syncOptions = process.env.NODE_ENV === 'dev' ? { force: false } : {};
 
 sequelize.sync(syncOptions)
   .then(() => {
