@@ -85,9 +85,10 @@ const saveUserDetails = async (req, res) => {
 };
 
 const getUserDetails = async (req, res) => {
-  const userId = req.user.id; // Get user ID from the authenticated token
 
   try {
+    const userId = req.user.id; // Get user ID from the authenticated token
+
     const userDetails = await UserDetails.findOne({ where: { userId } });
 
     if (!userDetails) {
@@ -102,7 +103,7 @@ const getUserDetails = async (req, res) => {
 
 
 const getDocumentsAgainstAUser = async (req, res) => {
-  const userId = req.user.id; // Get user ID from the authenticated token
+  const userId = req.user.id; 
 
   try {
     const docs = await Document.findAll({ where: { userId } });

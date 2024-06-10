@@ -44,7 +44,7 @@ const saveProofOfIncome = async (req, res) => {
       // If no id is provided, create a new ProofOfIncome
       console.log('Processing user:', userId);
       // Save the document for the document type
-      const document = await saveDocumentForDocumentType(userId, 3);
+      const document = await createDocument(userId, 3);
       console.log('Document ID:', document.id);
       
       proofOfIncome = await ProofOfIncome.create({ documentId: document.id, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage });
