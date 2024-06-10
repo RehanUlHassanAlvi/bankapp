@@ -1,10 +1,27 @@
 const { Sequelize } = require('sequelize');
 require('dotenv').config();
 
+const caCert = Buffer.from(process.env.DB_CA_CERT, 'base64').toString('utf-8');
+
 const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD, {
   host: process.env.DB_HOST,
+  port: 25536,
   dialect: 'mysql',
-  dialectModule: require('mysql2')
+  dialectModule: require('mysql2'),
+  dialectOptions: {
+    ssl: {
+      require: true,
+      rejectUnauthorized: false,
+      ca: caCert,
+    },
+  },
+  pool: {
+    max: 10,
+    min: 0,
+    acquire: 60000, // 60 seconds
+    idle: 10000,
+  },
+  connectTimeout: 60000, // 60 seconds
 });
 
 sequelize.authenticate()
