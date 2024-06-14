@@ -85,9 +85,9 @@ const login = async (req, res) => {
     }
     
     // Check if OTP is verified
-    if (!user.isKycVerified) {
-      return res.status(400).json({ message: 'KYC not verified' });
-    }
+    // if (!user.isKycVerified) {
+    //   return res.status(400).json({ message: 'KYC not verified' });
+    // }
 
     const isMatch = await bcrypt.compare(password, user.password);
 
@@ -100,9 +100,9 @@ const login = async (req, res) => {
 
     // Store the refresh token in the database
     user.refreshToken = refreshToken;
-    await user.save();
+    const userObj=await user.save();
 
-    res.status(200).json({ message: 'Login successful', accessToken, refreshToken });
+    res.status(200).json({ message: 'Login successful', accessToken, refreshToken, user:userObj });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
