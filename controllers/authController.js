@@ -2,10 +2,12 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/Users');
 const sendEmail = require('../utils/sendEmail');
+const UserDetails = require('../models/UserDetails');
+
 require('dotenv').config();
 
 const register = async (req, res) => {
-  const { password, email, type } = req.body;
+  const { password, email, type,companyName,website,country,state,city } = req.body;
 
   try {
     // Check if user already exists
@@ -24,6 +26,18 @@ const register = async (req, res) => {
 
     // Save OTP details to the database
     const newUser = await User.create({ email, password: hashedPassword, type, otp, otpExpiry });
+    if (type==='client'){
+    await UserDetails.create({
+      userId: newUser.id,
+      name:companyName,
+      country,
+      state,
+      city,
+      address:website,
+      email,
+      imageUrl
+    });
+  }
 
     // Send OTP via email
     await sendEmail(newUser.email, 'Your OTP Code', `Your OTP code is ${otp}`);
@@ -101,8 +115,14 @@ const login = async (req, res) => {
     // Store the refresh token in the database
     user.refreshToken = refreshToken;
     const userObj=await user.save();
-
+    
+    if (user.isKycVerified) {
     res.status(200).json({ message: 'Login successful', accessToken, refreshToken, user:userObj });
+    }
+    else{
+      const {refreshToken, ...userWoRefreshToken}=userObj
+      res.status(200).json({ message: 'Login successful', user:userWoRefreshToken });
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
