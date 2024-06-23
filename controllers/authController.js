@@ -7,7 +7,7 @@ const UserDetails = require('../models/UserDetails');
 require('dotenv').config();
 
 const register = async (req, res) => {
-  const { password, email, type,companyName,website,country,state,city } = req.body;
+  const { password, email, type,companyName,website,country,state,city,imageUrl } = req.body;
 
   try {
     // Check if user already exists
