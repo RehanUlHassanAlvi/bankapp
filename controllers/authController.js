@@ -115,13 +115,27 @@ const login = async (req, res) => {
     // Store the refresh token in the database
     user.refreshToken = refreshToken;
     const userObj=await user.save();
+    const savedUser = userObj.toJSON();
+
+// Constructing the simplified user object
+const userResponse = {
+    id: savedUser.id,
+    email: savedUser.email,
+    type: savedUser.type,
+    isOtpVerified: savedUser.isOtpVerified,
+    isKycVerified: savedUser.isKycVerified,
+    kycImageURL: savedUser.kycImageURL,
+    refreshToken: savedUser.refreshToken,
+    createdAt: savedUser.createdAt,
+    updatedAt: savedUser.updatedAt
+};
     
     if (user.isKycVerified) {
-    res.status(200).json({ message: 'Login successful', accessToken, refreshToken, user:userObj });
+    res.status(200).json({ message: 'Login successful', accessToken, refreshToken, user:userResponse });
     }
     else{
-      const {refreshToken, ...userWoRefreshToken}=userObj
-      res.status(200).json({ message: 'Login successful', user:userWoRefreshToken });
+      const {refreshToken, ...userWoRefreshToken}=userResponse
+      res.status(200).json({ message: 'Login successful', user:userResponse });
     }
   } catch (err) {
     res.status(500).json({ error: err.message });
