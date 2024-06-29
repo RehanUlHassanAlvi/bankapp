@@ -53,4 +53,12 @@ router.post('/save-tax-clearance', authenticateToken,taxClearanceController.save
 router.put('/tax-clearance/:id', authenticateToken,taxClearanceController.saveTaxClearance);
 router.delete('/tax-clearance/:id', authenticateToken,taxClearanceController.deleteTaxClearance);
 
+
+
+
+//below are the admin routes
+router.post('/client/save-tax-clearance', taxClearanceController.saveTaxClearance);
+router.post('/client/save-proof-of-residence', proofOfResidenceController.saveProofOfResidence);
+router.post('/client/save-certificate-of-incorporation', certificateOfIncorporationController.saveClientCertificateOfIncorporation);
+
 module.exports = router;
