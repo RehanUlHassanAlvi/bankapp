@@ -42,7 +42,7 @@ const register = async (req, res) => {
     // Send OTP via email
     await sendEmail(newUser.email, 'Your OTP Code', `Your OTP code is ${otp}`);
 
-    res.status(200).json({ message: 'OTP sent to your email' });
+    res.status(200).json({ message: 'OTP sent to your email',userId: newUser.id });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
