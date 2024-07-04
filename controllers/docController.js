@@ -158,28 +158,55 @@ const getDocumentById = async (req, res) => {
 
 
 const getDocumentByStatus = async (req, res) => {
-  const {status}=req.body;
+  const { status } = req.body;
 
   try {
     const documents = await Document.findAll({
-      where: {
-        status
-      },
+      where: { status },
       include: [
-        { model: DocumentType },
-        { model: User }
+        { model: User, include: [UserDetails] }, 
+        { model: DocumentType }
       ]
     });
 
-    if (!documents) {
-      return res.status(404).json({ error: 'Document not found' });
+    if (!documents || documents.length === 0) {
+      return res.status(404).json({ error: 'Documents not found' });
     }
 
-    res.status(200).json(documents);
+    // Prepare response with additional data based on documentTypeId
+    const formattedDocuments = documents.map(doc => {
+      let additionalData = {};
+
+      switch (doc.documentTypeId) {
+        case 1: // IdentityDocument
+          additionalData = { /* Fetch data for IdentityDocument */ };
+          break;
+        case 2: // CertificateOfIncorporation
+          additionalData = { /* Fetch data for CertificateOfIncorporation */ };
+          break;
+        // Add cases for other document types as needed
+        default:
+          break;
+      }
+
+      return {
+        id: doc.id,
+        userId: doc.userId,
+        documentTypeId: doc.documentTypeId,
+        url: doc.url,
+        status: doc.status,
+        createdAt: doc.createdAt,
+        updatedAt: doc.updatedAt,
+        additionalData: additionalData // Append additional data here
+      };
+    });
+
+    res.status(200).json(formattedDocuments);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching document: ' + error.message });
+    res.status(500).json({ error: 'Error fetching documents: ' + error.message });
   }
 };
+
 
 
 const getDocumentCounts = async (req, res) => {

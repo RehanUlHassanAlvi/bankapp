@@ -28,7 +28,7 @@ const Document = sequelize.define('Documents', {
     allowNull: true
   },
   status: {
-    type: DataTypes.ENUM('pending', 'approved', 'rejected'),
+    type: DataTypes.ENUM('pending', 'approved', 'rejected','requested'),
     defaultValue: 'pending'
   },
   createdAt: {
