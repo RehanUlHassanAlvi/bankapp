@@ -285,15 +285,23 @@ const getDocumentByStatus = async (req, res) => {
 
 
 
+const { User, Document } = require('../models'); // Adjust the path as necessary
+
 const getDocumentCounts = async (req, res) => {
   try {
-    const allDocuments = await Document.findAll();
+    // Fetch all documents with their associated users
+    const allDocuments = await Document.findAll({
+      include: [{
+        model: User,
+        where: { type: 'user' } // Filter to include only users with type 'user'
+      }]
+    });
+
     // Initialize counts
     let pendingCount = 0;
     let approvedCount = 0;
     let rejectedCount = 0;
     let requestedCount = 0;
-
 
     // Count documents by status
     allDocuments.forEach(document => {
@@ -328,6 +336,10 @@ const getDocumentCounts = async (req, res) => {
     console.error('Error fetching document counts:', error);
     res.status(500).json({ message: 'Server error', error });
   }
+};
+
+module.exports = {
+  getDocumentCounts
 };
 
 module.exports = {
