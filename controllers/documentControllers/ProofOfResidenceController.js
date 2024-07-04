@@ -42,7 +42,7 @@ const saveProofOfResidence = async (req, res) => {
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,5)
       if (id || docExists) {
       if (docExists){
-        id=docExists.id
+        id=docExists[0].id
         console.log('id is ',id)
       }
 
