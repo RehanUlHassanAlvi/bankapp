@@ -97,38 +97,36 @@ const saveProofOfResidence = async (req, res) => {
   }
 };
 
-const { sequelize } = require('../../config/config');
 
 const deleteProofOfResidence = async (req, res) => {
-  const transaction = await sequelize.transaction();
   try {
     console.log('Searching for Proof of Residence with documentId:', req.params.id);
-    const proofOfResidence = await ProofOfResidence.findOne({ where: { documentId: req.params.id }, transaction });
+    const proofOfResidence = await ProofOfResidence.findOne({ where: { documentId: req.params.id } });
+    
     if (proofOfResidence) {
-      console.log('Proof of Residence found, destroying it...');
-      await proofOfResidence.destroy({ transaction });
+      console.log('Proof of Residence found:', proofOfResidence);
+      await proofOfResidence.destroy();
+      console.log('Proof of Residence destroyed');
+      
       console.log('Searching for Document with id:', req.params.id);
-      const docu = await Document.findOne({ where: { id: req.params.id }, transaction });
+      const docu = await Document.findOne({ where: { id: req.params.id } });
+      
       if (docu) {
-        console.log('Document found, destroying it...');
-        await docu.destroy({ transaction });
+        console.log('Document found:', docu);
+        await docu.destroy();
+        console.log('Document destroyed');
       }
-      await transaction.commit();
-      console.log('Transaction committed successfully');
+      
       res.json({ message: 'Proof of Residence deleted successfully' });
     } else {
-      console.log('Proof of Residence not found, rolling back transaction');
-      await transaction.rollback();
+      console.log('Proof of Residence not found');
       res.status(404).json({ message: 'Proof of Residence not found' });
     }
   } catch (error) {
-    await transaction.rollback();
-    console.error('Server error:', error); // Log the error details
+    console.error('Server error:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
-
-
 module.exports = {
   getProofOfResidenceById,
   getAllProofsOfResidence,
