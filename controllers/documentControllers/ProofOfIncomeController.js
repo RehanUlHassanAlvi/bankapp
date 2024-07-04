@@ -1,6 +1,6 @@
 const { ProofOfIncome } = require('../../models');
 const {createDocument}=require('../docController')
-const {Document}=require('../..')
+const {Document}=require('../../models')
 const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
 
 // Get a specific proof of income by ID
