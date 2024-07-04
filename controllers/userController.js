@@ -84,6 +84,25 @@ const saveUserDetails = async (req, res) => {
   }
 };
 
+
+
+const getAllusers = async (req, res) => {
+
+  try {
+
+    const userDetails = await User.findAll();
+
+    if (!userDetails) {
+      return res.status(404).json({ message: 'Users not found' });
+    }
+
+    res.status(200).json(userDetails);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 const getUserDetails = async (req, res) => {
 
   try {
@@ -130,4 +149,4 @@ const getDocumentsAgainstAUser = async (req, res) => {
   }
 };
 
-module.exports = { saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction };
+module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction };

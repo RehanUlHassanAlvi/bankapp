@@ -7,5 +7,6 @@ const router = express.Router();
 router.post('/saveUserDetails',authenticateToken, saveUserDetails);
 router.get('/getUserDetails',authenticateToken, getUserDetails);
 router.get('/getDocs',authenticateToken, getDocumentsAgainstAUser);
+router.get('/getAllUsers',authenticateToken, getAllusers);
 
 module.exports = router;
