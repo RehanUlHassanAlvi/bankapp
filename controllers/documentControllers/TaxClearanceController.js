@@ -32,7 +32,11 @@ const saveTaxClearance = async (req, res) => {
     let taxClearance;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,6)
-    if (id || docExists) {
+      if (id || docExists) {
+      if (docExists){
+        id=docExists.id
+      }
+
       // If an id is provided, update the existing TaxClearance
       taxClearance = await TaxClearance.findByPk(id);
       if (taxClearance) {
@@ -58,7 +62,6 @@ const saveTaxClearance = async (req, res) => {
 };
 
 
-
 const saveClientTaxClearance = async (req, res) => {
   try {
     const { userId,id, expiryDate, attachmentUrl } = req.body;
@@ -66,7 +69,11 @@ const saveClientTaxClearance = async (req, res) => {
     let taxClearance;
     
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,6)
-    if (id || docExists) {
+      if (id || docExists) {
+      if (docExists){
+        id=docExists.id
+      }
+
       // If an id is provided, update the existing TaxClearance
       taxClearance = await TaxClearance.findByPk(id);
       if (taxClearance) {

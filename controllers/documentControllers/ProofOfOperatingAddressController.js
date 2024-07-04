@@ -34,7 +34,11 @@ const saveProofOfOperatingAddress = async (req, res) => {
     let proofOfOperatingAddress;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,4)
-    if (id || docExists) {
+      if (id || docExists) {
+      if (docExists){
+        id=docExists.id
+      }
+
       // If an id is provided, update the existing ProofOfOperatingAddress
       proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(id);
       if (proofOfOperatingAddress) {
@@ -67,7 +71,11 @@ const saveClientProofOfOperatingAddress = async (req, res) => {
 
     let proofOfOperatingAddress;
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
-    if (id || docExists) {
+      if (id || docExists) {
+      if (docExists){
+        id=docExists.id
+      }
+
       // If an id is provided, update the existing ProofOfOperatingAddress
       proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(id);
       if (proofOfOperatingAddress) {

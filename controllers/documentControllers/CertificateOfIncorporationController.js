@@ -35,7 +35,11 @@ const saveCertificateOfIncorporation = async (req, res) => {
     let certificate;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
-    if (id || docExists) {
+      if (id || docExists) {
+      if (docExists){
+        id=docExists.id
+      }
+
       // If an id is provided, update the existing CertificateOfIncorporation
       certificate = await CertificateOfIncorporation.findByPk(id);
       if (certificate) {
@@ -66,7 +70,11 @@ const saveClientCertificateOfIncorporation = async (req, res) => {
     let certificate;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
-    if (id || docExists) {
+      if (id || docExists) {
+      if (docExists){
+        id=docExists.id
+      }
+
       // If an id is provided, update the existing CertificateOfIncorporation
       certificate = await CertificateOfIncorporation.findByPk(id);
       if (certificate) {
