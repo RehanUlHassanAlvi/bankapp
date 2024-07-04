@@ -158,8 +158,12 @@ const getDocumentById = async (req, res) => {
 // Get document counts by status
 const getDocumentCounts = async (req, res) => {
   try {
-    const allDocuments = await Document.findAll(); // Fetch all documents
-
+    const allDocuments = await Document.findAll({
+      include: [
+        { model: DocumentType },
+        { model: User }
+      ]
+    });
     // Initialize counts
     let pendingCount = 0;
     let approvedCount = 0;
