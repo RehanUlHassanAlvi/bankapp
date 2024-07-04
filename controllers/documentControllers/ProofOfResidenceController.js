@@ -43,6 +43,7 @@ const saveProofOfResidence = async (req, res) => {
       if (id || docExists) {
       if (docExists){
         id=docExists.id
+        console.log('id is ',id)
       }
 
       // If an id is provided, update the existing ProofOfResidence
