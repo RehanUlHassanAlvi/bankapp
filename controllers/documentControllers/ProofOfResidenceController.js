@@ -97,6 +97,7 @@ const saveProofOfResidence = async (req, res) => {
   }
 };
 
+const { sequelize } = require('../../config/config');
 
 const deleteProofOfResidence = async (req, res) => {
   const transaction = await sequelize.transaction();
