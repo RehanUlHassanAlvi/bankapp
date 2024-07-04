@@ -39,7 +39,7 @@ const saveProofOfResidence = async (req, res) => {
     } = req.body;
 
     let proofOfResidence;
-    const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,5)
+    const docExists=await getDocumentsAgainstAUserAndTypeFunction(userId,5)
       if (id || docExists) {
       if (docExists){
         id=docExists[0].id
