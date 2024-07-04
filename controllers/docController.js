@@ -156,8 +156,45 @@ const getDocumentById = async (req, res) => {
   }
 };
 
+const getDocumentCounts = async (req, res) => {
+  try {
+    const counts = await Document.findAll({
+      attributes: [
+        'status',
+        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
+      ],
+      group: ['status']
+    });
+
+    const countsObject = {
+      pending: 0,
+      approved: 0,
+      rejected: 0,
+      requested: 0
+    };
+
+    counts.forEach(count => {
+      const status = count.status;
+      const countValue = count.get('count');
+      if (countsObject.hasOwnProperty(status)) {
+        countsObject[status] = countValue;
+      }
+    });
+
+    res.json({
+      pending: countsObject.pending,
+      approved: countsObject.approved,
+      rejected: countsObject.rejected,
+      requested: countsObject.requested
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+
 module.exports = {
   saveDocument,
   deleteDocument,
   getDocuments,
-  getDocumentById,createDocument}
+  getDocumentById,createDocument,getDocumentCounts}
