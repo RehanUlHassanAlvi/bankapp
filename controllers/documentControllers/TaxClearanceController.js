@@ -26,8 +26,7 @@ const getAllTaxClearances = async (req, res) => {
 };
 const saveTaxClearance = async (req, res) => {
   try {
-    const userId = req.user.id; // Get userId from the authenticated user
-    const { id, expiryDate, attachmentUrl } = req.body;
+    const { userId, id, expiryDate, attachmentUrl } = req.body;
 
     let taxClearance;
 
