@@ -158,11 +158,9 @@ const getDocumentById = async (req, res) => {
 
 const getDocumentCounts = async (req, res) => {
   try {
-    const counts = await Document.findAll({
-      attributes: [
-        'status',
-        [sequelize.fn('COUNT', sequelize.col('id')), 'count']
-      ],
+    const counts = await Document.aggregate('status', 'COUNT', {
+      distinct: true,
+      where: {},
       group: ['status']
     });
 
@@ -175,7 +173,7 @@ const getDocumentCounts = async (req, res) => {
 
     counts.forEach(count => {
       const status = count.status;
-      const countValue = count.get('count');
+      const countValue = count.count;
       if (countsObject.hasOwnProperty(status)) {
         countsObject[status] = countValue;
       }
@@ -188,6 +186,7 @@ const getDocumentCounts = async (req, res) => {
       requested: countsObject.requested
     });
   } catch (error) {
+    console.error('Error fetching document counts:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
