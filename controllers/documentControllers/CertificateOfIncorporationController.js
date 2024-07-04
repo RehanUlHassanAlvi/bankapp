@@ -30,7 +30,7 @@ const getAllCertificatesOfIncorporation = async (req, res) => {
 const saveCertificateOfIncorporation = async (req, res) => {
   try {
     const userId = req.user.id; // Get userId from the authenticated user
-    const { id, companyNumber, attachmentUrl } = req.body;
+    let { id, companyNumber, attachmentUrl } = req.body;
 
     let certificate;
 
@@ -65,7 +65,7 @@ const saveCertificateOfIncorporation = async (req, res) => {
 };
 const saveClientCertificateOfIncorporation = async (req, res) => {
   try {
-    const { userId,id, companyNumber, attachmentUrl } = req.body;
+    let { userId,id, companyNumber, attachmentUrl } = req.body;
 
     let certificate;
 

@@ -27,7 +27,7 @@ const getAllTaxClearances = async (req, res) => {
 };
 const saveTaxClearance = async (req, res) => {
   try {
-    const { userId, id, expiryDate, attachmentUrl } = req.body;
+    let { userId, id, expiryDate, attachmentUrl } = req.body;
 
     let taxClearance;
 
@@ -64,7 +64,7 @@ const saveTaxClearance = async (req, res) => {
 
 const saveClientTaxClearance = async (req, res) => {
   try {
-    const { userId,id, expiryDate, attachmentUrl } = req.body;
+    let { userId,id, expiryDate, attachmentUrl } = req.body;
 
     let taxClearance;
     

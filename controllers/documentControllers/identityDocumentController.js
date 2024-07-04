@@ -27,7 +27,7 @@ const getAllIdentityDocuments = async (req, res) => {
 };
 const saveIdentityDocument = async (req, res) => {
   try {
-    const { id, documentId, identityNumber, expiryDate, attachmentUrl } = req.body;
+    let { id, documentId, identityNumber, expiryDate, attachmentUrl } = req.body;
 
     let identityDocument;
 

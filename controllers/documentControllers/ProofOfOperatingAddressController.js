@@ -29,7 +29,7 @@ const getAllProofsOfOperatingAddress = async (req, res) => {
 const saveProofOfOperatingAddress = async (req, res) => {
   try {
     const userId = req.user.id; // Get userId from the authenticated user
-    const { id, residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl } = req.body;
+    let { id, residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl } = req.body;
 
     let proofOfOperatingAddress;
 
@@ -67,7 +67,7 @@ const saveProofOfOperatingAddress = async (req, res) => {
 
 const saveClientProofOfOperatingAddress = async (req, res) => {
   try {
-    const {userId, id, residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl } = req.body;
+    let {userId, id, residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl } = req.body;
 
     let proofOfOperatingAddress;
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)

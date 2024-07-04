@@ -31,7 +31,7 @@ const saveProofOfResidence = async (req, res) => {
 
   
     // Destructure the request body
-    const { 
+    let { 
       id, residentialDetails, durationOfStay, specificDetails, physicalAddress, 
       townCity, attachmentFrontPage, attachmentBackPage, plotNumber, 
       leaseAgreementDate, leaseAgreementDuration, titleDeedNumber, 

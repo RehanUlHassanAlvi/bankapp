@@ -28,7 +28,7 @@ const getAllProofsOfIncome = async (req, res) => {
 const saveProofOfIncome = async (req, res) => {
   try {
     const userId = req.user.id; // Get userId from the authenticated user
-    const { id, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage } = req.body;
+    let { id, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage } = req.body;
 
     let proofOfIncome;
 
