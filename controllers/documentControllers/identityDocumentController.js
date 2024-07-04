@@ -65,7 +65,7 @@ const saveIdentityDocument = async (req, res) => {
 // Delete an identity document
 const deleteIdentityDocument = async (req, res) => {
   try {
-    const identityDocument = await IdentityDocument.findByPk(req.params.id);
+    const identityDocument = await IdentityDocument.findOne({ where: { documentId: req.params.id} });
     if (identityDocument) {
       await identityDocument.destroy();
       res.json({ message: 'Identity Document deleted successfully' });

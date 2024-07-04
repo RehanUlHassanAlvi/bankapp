@@ -102,7 +102,7 @@ const saveClientCertificateOfIncorporation = async (req, res) => {
 // Delete a certificate of incorporation
 const deleteCertificateOfIncorporation = async (req, res) => {
   try {
-    const certificate = await CertificateOfIncorporation.findByPk(req.params.id);
+    const certificate = await CertificateOfIncorporation.findOne({ where: { documentId: req.params.id} });
     if (certificate) {
       await certificate.destroy();
       res.json({ message: 'Certificate of Incorporation deleted successfully' });

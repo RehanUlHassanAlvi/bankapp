@@ -101,7 +101,7 @@ const saveProofOfResidence = async (req, res) => {
 // Delete a proof of residence
 const deleteProofOfResidence = async (req, res) => {
   try {
-    const proofOfResidence = await ProofOfResidence.findByPk(req.params.id);
+    const proofOfResidence = await ProofOfResidence.findOne({ where: { documentId: req.params.id} });
     if (proofOfResidence) {
       await proofOfResidence.destroy();
       res.json({ message: 'Proof of Residence deleted successfully' });

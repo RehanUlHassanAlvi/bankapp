@@ -65,7 +65,7 @@ const saveProofOfIncome = async (req, res) => {
 // Delete a proof of income
 const deleteProofOfIncome = async (req, res) => {
   try {
-    const proofOfIncome = await ProofOfIncome.findByPk(req.params.id);
+    const proofOfIncome = await ProofOfIncome.findOne({ where: { documentId: req.params.id} });
     if (proofOfIncome) {
       await proofOfIncome.destroy();
       res.json({ message: 'Proof of Income deleted successfully' });

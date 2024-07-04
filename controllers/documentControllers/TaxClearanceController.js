@@ -102,7 +102,7 @@ const saveClientTaxClearance = async (req, res) => {
 // Delete a tax clearance
 const deleteTaxClearance = async (req, res) => {
   try {
-    const taxClearance = await TaxClearance.findByPk(req.params.id);
+    const taxClearance = await TaxClearance.findOne({ where: { documentId: req.params.id} });
     if (taxClearance) {
       await taxClearance.destroy();
       res.json({ message: 'Tax Clearance deleted successfully' });

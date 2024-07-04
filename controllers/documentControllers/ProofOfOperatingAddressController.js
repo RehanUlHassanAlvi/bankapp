@@ -103,7 +103,7 @@ const saveClientProofOfOperatingAddress = async (req, res) => {
 // Delete a proof of operating address
 const deleteProofOfOperatingAddress = async (req, res) => {
   try {
-    const proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(req.params.id);
+    const proofOfOperatingAddress = await ProofOfOperatingAddress.findOne({ where: { documentId: req.params.id} });
     if (proofOfOperatingAddress) {
       await proofOfOperatingAddress.destroy();
       res.json({ message: 'Proof of Operating Address deleted successfully' });
