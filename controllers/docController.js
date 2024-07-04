@@ -161,33 +161,57 @@ const getDocumentByStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
+    // Fetch all documents with User and DocumentType included
     const documents = await Document.findAll({
       where: { status },
-      include: [
-        { model: User, include: [UserDetails] }, 
-        { model: DocumentType }
-      ]
+      include: [{ model: User }, { model: DocumentType }]
     });
 
     if (!documents || documents.length === 0) {
       return res.status(404).json({ error: 'Documents not found' });
     }
 
+    // Extract userIds from documents to fetch UserDetails in bulk
+    const userIds = documents.map(doc => doc.userId);
+
+    // Fetch UserDetails for all userIds in one query
+    const userDetailsMap = {};
+    const userDetails = await UserDetails.findAll({ where: { userId: userIds } });
+
+    // Organize UserDetails in a map for quick lookup
+    userDetails.forEach(detail => {
+      userDetailsMap[detail.userId] = detail;
+    });
+
     // Prepare response with additional data based on documentTypeId
     const formattedDocuments = documents.map(doc => {
       let additionalData = {};
 
-      switch (doc.documentTypeId) {
-        case 1: // IdentityDocument
-          additionalData = { /* Fetch data for IdentityDocument */ };
-          break;
-        case 2: // CertificateOfIncorporation
-          additionalData = { /* Fetch data for CertificateOfIncorporation */ };
-          break;
-        // Add cases for other document types as needed
-        default:
-          break;
-      }
+      // switch (doc.documentTypeId) {
+      //   case 1: // IdentityDocument
+      //     additionalData = { /* Fetch data for IdentityDocument */ };
+      //     break;
+      //   case 2: // CertificateOfIncorporation
+      //     additionalData = { /* Fetch data for CertificateOfIncorporation */ };
+      //     break;
+      //   case 3: // ProofOfIncome
+      //     additionalData = { /* Fetch data for ProofOfIncome */ };
+      //     break;
+      //   case 4: // ProofOfOperatingAddress
+      //     additionalData = { /* Fetch data for ProofOfOperatingAddress */ };
+      //     break;
+      //   case 5: // ProofOfResidence
+      //     additionalData = { /* Fetch data for ProofOfResidence */ };
+      //     break;
+      //   case 6: // TaxClearance
+      //     additionalData = { /* Fetch data for TaxClearance */ };
+      //     break;
+      //   default:
+      //     break;
+      // }
+
+      // Get UserDetails for the User associated with the document
+      const userDetails = userDetailsMap[doc.userId];
 
       return {
         id: doc.id,
@@ -197,7 +221,8 @@ const getDocumentByStatus = async (req, res) => {
         status: doc.status,
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
-        additionalData: additionalData // Append additional data here
+        additionalData: additionalData,
+        userDetails: userDetails // Append userDetails to the document object
       };
     });
 
