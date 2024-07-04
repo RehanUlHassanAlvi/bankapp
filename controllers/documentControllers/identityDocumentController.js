@@ -68,7 +68,7 @@ const deleteIdentityDocument = async (req, res) => {
     const identityDocument = await IdentityDocument.findOne({ where: { documentId: req.params.id} });
     if (identityDocument) {
       await identityDocument.destroy();
-      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      const docu=await Document.findOne({ where: { id: req.params.id} });
       if(docu)
       {
           await docu.destroy();

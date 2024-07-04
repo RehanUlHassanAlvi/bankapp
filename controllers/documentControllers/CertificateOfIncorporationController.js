@@ -105,7 +105,7 @@ const deleteCertificateOfIncorporation = async (req, res) => {
     const certificate = await CertificateOfIncorporation.findOne({ where: { documentId: req.params.id} });
     if (certificate) {
       await certificate.destroy();
-      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      const docu=await Document.findOne({ where: { id: req.params.id} });
       if(docu)
       {
           await docu.destroy();

@@ -105,7 +105,7 @@ const deleteTaxClearance = async (req, res) => {
     const taxClearance = await TaxClearance.findOne({ where: { documentId: req.params.id} });
     if (taxClearance) {
       await taxClearance.destroy();
-      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      const docu=await Document.findOne({ where: { id: req.params.id} });
       if(docu)
       {
           await docu.destroy();

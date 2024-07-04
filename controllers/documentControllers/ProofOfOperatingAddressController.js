@@ -106,7 +106,7 @@ const deleteProofOfOperatingAddress = async (req, res) => {
     const proofOfOperatingAddress = await ProofOfOperatingAddress.findOne({ where: { documentId: req.params.id} });
     if (proofOfOperatingAddress) {
       await proofOfOperatingAddress.destroy();
-      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      const docu=await Document.findOne({ where: { id: req.params.id} });
       if(docu)
       {
           await docu.destroy();
