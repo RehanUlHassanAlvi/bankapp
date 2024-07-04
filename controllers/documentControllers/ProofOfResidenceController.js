@@ -40,11 +40,10 @@ const saveProofOfResidence = async (req, res) => {
 
     let proofOfResidence;
     const docExists=await getDocumentsAgainstAUserAndTypeFunction(userId,5)
-     if (id || docExists.length > 0) {
-  if (docExists.length > 0) {
-    id = docExists[0].id;
-  }
-}
+      if (id || docExists.length>0) {
+      if (docExists){
+        id=docExists[0].id
+      }
 
       // If an id is provided, update the existing ProofOfResidence
       proofOfResidence = await ProofOfResidence.findOne({ where: { documentId: id } });
