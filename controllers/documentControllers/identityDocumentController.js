@@ -27,6 +27,8 @@ const getAllIdentityDocuments = async (req, res) => {
 };
 const saveIdentityDocument = async (req, res) => {
   try {
+    const userId = req.user.id; // Get userId from the authenticated user
+
     let { id, documentId, identityNumber, expiryDate, attachmentUrl } = req.body;
 
     let identityDocument;
