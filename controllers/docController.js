@@ -34,6 +34,30 @@ const createDocument = async (userId,documentTypeId) => {
 };
 
 
+
+// Delete a document
+const updateDocumentStats = async (req, res) => {
+  const { documentId,status } = req.body;
+
+  try {
+    const  document = await Document.findByPk(documentId);
+    document.status=status;
+
+    if (!document) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    let docRes=await document.save();
+
+    res.status(200).json({ message: 'Document Status updated successfully',docRes });
+  } catch (error) {
+    res.status(500).json({ error: 'Error updating document: ' + error.message });
+  }
+};
+
+
+
+
 const saveDocument = async (req, res) => {
   const { id } = req.params; // Get document id from URL parameters
   const { userId, documentTypeId, url, status } = req.body; // Get document data from request body
@@ -310,4 +334,4 @@ module.exports = {
   saveDocument,
   deleteDocument,
   getDocuments,
-  getDocumentById,createDocument,getDocumentCounts,getDocumentByStatus}
+  getDocumentById,createDocument,getDocumentCounts,getDocumentByStatus,updateDocumentStats}
