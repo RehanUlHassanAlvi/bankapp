@@ -156,6 +156,32 @@ const getDocumentById = async (req, res) => {
   }
 };
 
+
+const getDocumentByStatus = async (req, res) => {
+  const {status}=req.body;
+
+  try {
+    const dcouments = await Document.findAll({
+      where: {
+        status
+      },
+      include: [
+        { model: DocumentType },
+        { model: User }
+      ]
+    });
+
+    if (!documents) {
+      return res.status(404).json({ error: 'Document not found' });
+    }
+
+    res.status(200).json(documents);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching document: ' + error.message });
+  }
+};
+
+
 const getDocumentCounts = async (req, res) => {
   try {
     const allDocuments = await Document.findAll();
@@ -205,4 +231,4 @@ module.exports = {
   saveDocument,
   deleteDocument,
   getDocuments,
-  getDocumentById,createDocument,getDocumentCounts}
+  getDocumentById,createDocument,getDocumentCounts,getDocumentByStatus}

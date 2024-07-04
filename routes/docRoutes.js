@@ -3,7 +3,7 @@ const {
   saveDocument,
   deleteDocument,
   getDocuments,
-  getDocumentById,getDocumentCounts
+  getDocumentById,getDocumentCounts,getDocumentByStatus
 } = require('../controllers/docController');
 const authenticateToken = require('../middleware/authMiddleware'); 
 
@@ -14,6 +14,8 @@ router.delete('/delete/:id',authenticateToken, deleteDocument);
 router.get('/',authenticateToken, getDocuments);
 // router.get('/:id',authenticateToken, getDocumentById);
 router.get('/docSummary',authenticateToken, getDocumentCounts);
+router.get('/docUser',authenticateToken, getDocumentByStatus);
+
 
 
 module.exports = router;
