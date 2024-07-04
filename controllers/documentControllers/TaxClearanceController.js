@@ -32,10 +32,11 @@ const saveTaxClearance = async (req, res) => {
     let taxClearance;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,6)
-    if (id || docExists) {
-      if (docExists){
-        id=docExists[0].id
-      }
+   if (id || docExists.length > 0) {
+  if (docExists.length > 0) {
+    id = docExists[0].id;
+  }
+}
 
       // If an id is provided, update the existing TaxClearance
       taxClearance = await TaxClearance.findOne({ where: { documentId: id } });;
@@ -69,10 +70,11 @@ const saveClientTaxClearance = async (req, res) => {
     let taxClearance;
     
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,6)
-    if (id || docExists) {
-      if (docExists){
-        id=docExists[0].id
-      }
+   if (id || docExists.length > 0) {
+  if (docExists.length > 0) {
+    id = docExists[0].id;
+  }
+}
 
       // If an id is provided, update the existing TaxClearance
       taxClearance = await TaxClearance.findOne({ where: { documentId: id } });;

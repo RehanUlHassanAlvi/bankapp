@@ -34,10 +34,11 @@ const saveProofOfOperatingAddress = async (req, res) => {
     let proofOfOperatingAddress;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,4)
-    if (id || docExists) {
-      if (docExists){
-        id=docExists[0].id
-      }
+   if (id || docExists.length > 0) {
+  if (docExists.length > 0) {
+    id = docExists[0].id;
+  }
+}
 
       // If an id is provided, update the existing ProofOfOperatingAddress
       proofOfOperatingAddress = await ProofOfOperatingAddress.findOne({ where: { documentId: id } });;
@@ -71,10 +72,11 @@ const saveClientProofOfOperatingAddress = async (req, res) => {
 
     let proofOfOperatingAddress;
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
-    if (id || docExists) {
-      if (docExists){
-        id=docExists[0].id
-      }
+   if (id || docExists.length > 0) {
+  if (docExists.length > 0) {
+    id = docExists[0].id;
+  }
+}
 
       // If an id is provided, update the existing ProofOfOperatingAddress
       proofOfOperatingAddress = await ProofOfOperatingAddress.findOne({ where: { documentId: id } });;

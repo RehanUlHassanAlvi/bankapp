@@ -35,10 +35,11 @@ const saveCertificateOfIncorporation = async (req, res) => {
     let certificate;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
-    if (id || docExists) {
-      if (docExists){
-        id=docExists[0].id
-      }
+   if (id || docExists.length > 0) {
+  if (docExists.length > 0) {
+    id = docExists[0].id;
+  }
+}
 
       // If an id is provided, update the existing CertificateOfIncorporation
       certificate = await CertificateOfIncorporation.findOne({ where: { documentId: id } });;
@@ -70,10 +71,11 @@ const saveClientCertificateOfIncorporation = async (req, res) => {
     let certificate;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
-    if (id || docExists) {
-      if (docExists){
-        id=docExists[0].id
-      }
+   if (id || docExists.length > 0) {
+  if (docExists.length > 0) {
+    id = docExists[0].id;
+  }
+}
 
       // If an id is provided, update the existing CertificateOfIncorporation
       certificate = await CertificateOfIncorporation.findOne({ where: { documentId: id } });;
