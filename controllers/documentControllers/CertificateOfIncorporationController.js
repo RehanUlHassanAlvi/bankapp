@@ -32,7 +32,9 @@ const saveCertificateOfIncorporation = async (req, res) => {
 
     let certificate;
 
-    if (id) {
+    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,2)
+
+    if (id || docExists) {
       // If an id is provided, update the existing CertificateOfIncorporation
       certificate = await CertificateOfIncorporation.findByPk(id);
       if (certificate) {

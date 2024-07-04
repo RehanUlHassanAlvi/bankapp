@@ -30,7 +30,9 @@ const saveIdentityDocument = async (req, res) => {
 
     let identityDocument;
 
-    if (id) {
+    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,1)
+
+    if (id || docExists) {
       // If an id is provided, update the existing IdentityDocument
       identityDocument = await IdentityDocument.findByPk(id);
       if (identityDocument) {

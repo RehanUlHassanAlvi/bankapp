@@ -31,7 +31,9 @@ const saveProofOfIncome = async (req, res) => {
 
     let proofOfIncome;
 
-    if (id) {
+    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,3)
+
+    if (id || docExists) {
       // If an id is provided, update the existing ProofOfIncome
       proofOfIncome = await ProofOfIncome.findByPk(id);
       if (proofOfIncome) {

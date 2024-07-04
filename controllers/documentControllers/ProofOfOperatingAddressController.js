@@ -32,7 +32,9 @@ const saveProofOfOperatingAddress = async (req, res) => {
 
     let proofOfOperatingAddress;
 
-    if (id) {
+    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,4)
+
+    if (id || docExists) {
       // If an id is provided, update the existing ProofOfOperatingAddress
       proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(id);
       if (proofOfOperatingAddress) {

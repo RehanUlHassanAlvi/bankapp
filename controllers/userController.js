@@ -102,12 +102,23 @@ const getUserDetails = async (req, res) => {
 };
 
 
+const getDocumentsAgainstAUserFunction= async (userId)=>{
+    const docs = await Document.findAll({ where: { userId } });
+    return docs;
+}
+
+const getDocumentsAgainstAUserAndTypeFunction = async (userId, docTypeId) => {
+  const docs = await Document.findAll({ where: { userId, documentTypeId: docTypeId } });
+  return docs;
+};
+
+
 const getDocumentsAgainstAUser = async (req, res) => {
 
   try {
     const userId = req.user.id; 
 
-    const docs = await Document.findAll({ where: { userId } });
+    const docs = await getDocumentsAgainstAUserFunction(userId)
 
     if (!docs) {
       return res.status(404).json({ message: 'No Documents Found Against this user' });
@@ -119,4 +130,4 @@ const getDocumentsAgainstAUser = async (req, res) => {
   }
 };
 
-module.exports = { saveUserDetails, getUserDetails,getDocumentsAgainstAUser };
+module.exports = { saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction };

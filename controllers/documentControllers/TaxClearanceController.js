@@ -60,10 +60,11 @@ const saveTaxClearance = async (req, res) => {
 const saveClientTaxClearance = async (req, res) => {
   try {
     const { userId,id, expiryDate, attachmentUrl } = req.body;
+    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,6)
 
     let taxClearance;
 
-    if (id) {
+    if (id || docExists) {
       // If an id is provided, update the existing TaxClearance
       taxClearance = await TaxClearance.findByPk(id);
       if (taxClearance) {

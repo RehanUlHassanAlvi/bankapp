@@ -1,5 +1,6 @@
 const { ProofOfResidence } = require('../../models');
 const { createDocument } = require('../docController');
+const { userController } = require('../userController');
 
 // Get a specific proof of residence by ID
 const getProofOfResidenceById = async (req, res) => {
@@ -28,6 +29,8 @@ const saveProofOfResidence = async (req, res) => {
   try {
     const userId = req.user.id; // Get userId from the authenticated user
 
+    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,5)
+  
     // Destructure the request body
     const { 
       id, residentialDetails, durationOfStay, specificDetails, physicalAddress, 
@@ -38,7 +41,7 @@ const saveProofOfResidence = async (req, res) => {
 
     let proofOfResidence;
 
-    if (id) {
+    if (id || docExists) {
       // If an id is provided, update the existing ProofOfResidence
       proofOfResidence = await ProofOfResidence.findByPk(id);
       
