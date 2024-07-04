@@ -1,5 +1,6 @@
 const { IdentityDocument } = require('../../models');
 const {createDocument}=require('../docController')
+const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
 
 // Get a specific identity document by ID
 const getIdentityDocumentById = async (req, res) => {
@@ -30,8 +31,7 @@ const saveIdentityDocument = async (req, res) => {
 
     let identityDocument;
 
-    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,1)
-
+    const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,1)
     if (id || docExists) {
       // If an id is provided, update the existing IdentityDocument
       identityDocument = await IdentityDocument.findByPk(id);

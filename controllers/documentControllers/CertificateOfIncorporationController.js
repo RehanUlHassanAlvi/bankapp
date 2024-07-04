@@ -1,5 +1,7 @@
 const { CertificateOfIncorporation } = require('../../models');
 const { createDocument } = require('../docController');
+const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
+
 
 // Get a specific certificate of incorporation by ID
 const getCertificateOfIncorporationById = async (req, res) => {
@@ -32,8 +34,7 @@ const saveCertificateOfIncorporation = async (req, res) => {
 
     let certificate;
 
-    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,2)
-
+    const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
     if (id || docExists) {
       // If an id is provided, update the existing CertificateOfIncorporation
       certificate = await CertificateOfIncorporation.findByPk(id);
@@ -64,7 +65,8 @@ const saveClientCertificateOfIncorporation = async (req, res) => {
 
     let certificate;
 
-    if (id) {
+    const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
+    if (id || docExists) {
       // If an id is provided, update the existing CertificateOfIncorporation
       certificate = await CertificateOfIncorporation.findByPk(id);
       if (certificate) {

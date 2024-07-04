@@ -1,5 +1,6 @@
 const { ProofOfIncome } = require('../../models');
 const {createDocument}=require('../docController')
+const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
 
 // Get a specific proof of income by ID
 const getProofOfIncomeById = async (req, res) => {
@@ -31,8 +32,7 @@ const saveProofOfIncome = async (req, res) => {
 
     let proofOfIncome;
 
-    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,3)
-
+    const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,3)
     if (id || docExists) {
       // If an id is provided, update the existing ProofOfIncome
       proofOfIncome = await ProofOfIncome.findByPk(id);

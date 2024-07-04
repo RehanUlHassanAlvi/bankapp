@@ -1,5 +1,6 @@
 const { ProofOfOperatingAddress } = require('../../models');
 const {createDocument}=require('../docController')
+const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
 
 // Get a specific proof of operating address by ID
 const getProofOfOperatingAddressById = async (req, res) => {
@@ -32,8 +33,7 @@ const saveProofOfOperatingAddress = async (req, res) => {
 
     let proofOfOperatingAddress;
 
-    const docExists=userController.getDocumentsAgainstAUserAndTypeFunction(userId,4)
-
+    const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,4)
     if (id || docExists) {
       // If an id is provided, update the existing ProofOfOperatingAddress
       proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(id);
@@ -66,8 +66,8 @@ const saveClientProofOfOperatingAddress = async (req, res) => {
     const {userId, id, residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl } = req.body;
 
     let proofOfOperatingAddress;
-
-    if (id) {
+    const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
+    if (id || docExists) {
       // If an id is provided, update the existing ProofOfOperatingAddress
       proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(id);
       if (proofOfOperatingAddress) {
