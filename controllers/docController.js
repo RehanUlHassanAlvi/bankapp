@@ -155,22 +155,16 @@ const getDocumentById = async (req, res) => {
     res.status(500).json({ error: 'Error fetching document: ' + error.message });
   }
 };
-// Get document counts by status
+
 const getDocumentCounts = async (req, res) => {
   try {
-    const allDocuments = await Document.findAll({
-      include: [
-        { model: DocumentType },
-        { model: User }
-      ]
-    });
+    const allDocuments = await Document.findAll();
     // Initialize counts
     let pendingCount = 0;
     let approvedCount = 0;
     let rejectedCount = 0;
     let requestedCount = 0;
 
-    console.log("dcouments: ",allDocuments)
 
     // Count documents by status
     allDocuments.forEach(document => {

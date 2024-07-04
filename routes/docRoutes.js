@@ -12,7 +12,7 @@ const router = express.Router();
 router.post('/add',authenticateToken, saveDocument);
 router.delete('/delete/:id',authenticateToken, deleteDocument);
 router.get('/',authenticateToken, getDocuments);
-router.get('/:id',authenticateToken, getDocumentById);
+// router.get('/:id',authenticateToken, getDocumentById);
 router.get('/docSummary',authenticateToken, getDocumentCounts);
 
 
