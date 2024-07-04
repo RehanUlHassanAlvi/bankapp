@@ -28,12 +28,12 @@ const getAllProofsOfIncome = async (req, res) => {
 };
 const saveProofOfIncome = async (req, res) => {
   try {
-    const userId = req.user.id; // Get userId from the authenticated user
+    const userId = req.user.id;
     let { id, sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage } = req.body;
 
     let proofOfIncome;
 
-    const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,3)
+    const docExists=await getDocumentsAgainstAUserAndTypeFunction(userId,3)
     if (id || docExists.length>0) {
       if (docExists){
         id=docExists[0].id
