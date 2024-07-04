@@ -285,8 +285,6 @@ const getDocumentByStatus = async (req, res) => {
 
 
 
-const { User, Document } = require('../models'); // Adjust the path as necessary
-
 const getDocumentCounts = async (req, res) => {
   try {
     // Fetch all documents with their associated users
