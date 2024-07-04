@@ -1,6 +1,7 @@
 const { ProofOfResidence } = require('../../models');
 const { createDocument } = require('../docController');
 const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
+const {Document}=require('../../models')
 
 // Get a specific proof of residence by ID
 const getProofOfResidenceById = async (req, res) => {
