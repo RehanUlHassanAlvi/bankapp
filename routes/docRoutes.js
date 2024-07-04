@@ -14,7 +14,7 @@ router.delete('/delete/:id',authenticateToken, deleteDocument);
 router.get('/',authenticateToken, getDocuments);
 // router.get('/:id',authenticateToken, getDocumentById);
 router.get('/docSummary',authenticateToken, getDocumentCounts);
-router.get('/docUser',authenticateToken, getDocumentByStatus);
+router.post('/docUser',authenticateToken, getDocumentByStatus);
 router.post('/updateDocStatus',authenticateToken, updateDocumentStats);
 
 
