@@ -55,8 +55,7 @@
       type: DataTypes.STRING
     },
     attachmentAllPages: {
-      type: DataTypes.STRING,
-      allowNull: false
+      type: DataTypes.STRING
     },
     companyName: {
       type: DataTypes.STRING
