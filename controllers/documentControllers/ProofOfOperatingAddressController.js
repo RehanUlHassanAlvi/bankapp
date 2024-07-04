@@ -34,13 +34,13 @@ const saveProofOfOperatingAddress = async (req, res) => {
     let proofOfOperatingAddress;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,4)
-      if (id || docExists) {
+    if (id || docExists) {
       if (docExists){
-        id=docExists.id
+        id=docExists[0].id
       }
 
       // If an id is provided, update the existing ProofOfOperatingAddress
-      proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(id);
+      proofOfOperatingAddress = await ProofOfOperatingAddress.findOne({ where: { documentId: id } });;
       if (proofOfOperatingAddress) {
         await proofOfOperatingAddress.update({ residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl });
         res.json({ message: 'Proof of Operating Address updated successfully', proofOfOperatingAddress });
@@ -71,13 +71,13 @@ const saveClientProofOfOperatingAddress = async (req, res) => {
 
     let proofOfOperatingAddress;
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,2)
-      if (id || docExists) {
+    if (id || docExists) {
       if (docExists){
-        id=docExists.id
+        id=docExists[0].id
       }
 
       // If an id is provided, update the existing ProofOfOperatingAddress
-      proofOfOperatingAddress = await ProofOfOperatingAddress.findByPk(id);
+      proofOfOperatingAddress = await ProofOfOperatingAddress.findOne({ where: { documentId: id } });;
       if (proofOfOperatingAddress) {
         await proofOfOperatingAddress.update({ residentialDetails, specificDetails, physicalAddress, townCity, attachmentUrl });
         res.json({ message: 'Proof of Operating Address updated successfully', proofOfOperatingAddress });

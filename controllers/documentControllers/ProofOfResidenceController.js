@@ -43,11 +43,10 @@ const saveProofOfResidence = async (req, res) => {
       if (id || docExists) {
       if (docExists){
         id=docExists[0].id
-        console.log('id is ',id)
       }
 
       // If an id is provided, update the existing ProofOfResidence
-      proofOfResidence = await ProofOfResidence.findByPk(id);
+      proofOfResidence = await ProofOfResidence.findOne({ where: { documentId: id } });
       
       if (!proofOfResidence) {
         return res.status(404).json({ message: 'Proof of Residence not found' });

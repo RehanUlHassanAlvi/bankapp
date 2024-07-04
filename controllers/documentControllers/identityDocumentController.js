@@ -32,13 +32,13 @@ const saveIdentityDocument = async (req, res) => {
     let identityDocument;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,1)
-      if (id || docExists) {
+    if (id || docExists) {
       if (docExists){
-        id=docExists.id
+        id=docExists[0].id
       }
 
       // If an id is provided, update the existing IdentityDocument
-      identityDocument = await IdentityDocument.findByPk(id);
+      identityDocument = await IdentityDocument.findOne({ where: { documentId: id } });;
       if (identityDocument) {
         await identityDocument.update({ identityNumber,documentId, expiryDate, attachmentUrl });
         res.json({ message: 'Identity Document updated successfully', identityDocument });
