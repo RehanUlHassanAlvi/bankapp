@@ -63,26 +63,37 @@ const saveProofOfIncome = async (req, res) => {
   }
 };
 
-// Delete a proof of income
 const deleteProofOfIncome = async (req, res) => {
   try {
-    const proofOfIncome = await ProofOfIncome.findOne({ where: { documentId: req.params.id} });
+    console.log('Searching for Proof of Income with documentId:', req.params.id);
+    const proofOfIncome = await ProofOfIncome.findOne({ where: { documentId: req.params.id } });
+    
     if (proofOfIncome) {
+      console.log('Proof of Income found:', proofOfIncome);
       await proofOfIncome.destroy();
-      const proofOfIncome = await Document.findOne({ where: { id: req.params.id} });
-      const docu=await Document.findOne({ where: { id: req.params.id} });
-      if(docu)
-      {
-          await docu.destroy();
+      console.log('Proof of Income destroyed');
+      
+      console.log('Searching for Document with id:', req.params.id);
+      const docu = await Document.findOne({ where: { id: req.params.id } });
+      
+      if (docu) {
+        console.log('Document found:', docu);
+        await docu.destroy();
+        console.log('Document destroyed');
       }
+      
       res.json({ message: 'Proof of Income deleted successfully' });
     } else {
+      console.log('Proof of Income not found');
       res.status(404).json({ message: 'Proof of Income not found' });
     }
   } catch (error) {
+    console.error('Server error:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
+module.exports = { deleteProofOfIncome };
 
 module.exports = {
   getProofOfIncomeById,

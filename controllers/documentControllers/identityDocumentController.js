@@ -62,24 +62,38 @@ const saveIdentityDocument = async (req, res) => {
   }
 };
 
-// Delete an identity document
 const deleteIdentityDocument = async (req, res) => {
   try {
+    console.log('Searching for Identity Document with documentId:', req.params.id);
     const identityDocument = await IdentityDocument.findOne({ where: { documentId: req.params.id } });
+    
     if (identityDocument) {
+      console.log('Identity Document found:', identityDocument);
       await identityDocument.destroy();
+      console.log('Identity Document destroyed');
+      
+      console.log('Searching for Document with id:', req.params.id);
       const docu = await Document.findOne({ where: { id: req.params.id } });
+      
       if (docu) {
+        console.log('Document found:', docu);
         await docu.destroy();
+        console.log('Document destroyed');
       }
+      
       res.json({ message: 'Identity Document deleted successfully' });
     } else {
+      console.log('Identity Document not found');
       res.status(404).json({ message: 'Identity Document not found' });
     }
   } catch (error) {
+    console.error('Server error:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
+module.exports = { deleteIdentityDocument };
+
 
 module.exports = {
   getIdentityDocumentById,
