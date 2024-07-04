@@ -1,6 +1,6 @@
 const { User,Document,DocumentType } = require('../models');
 const { TaxClearance,ProofOfIncome,ProofOfOperatingAddress,ProofOfResidence,CertificateOfIncorporation,IdentityDocument } = require('../models');
-const {UserDetails}=require('../models')
+const UserDetails = require('../models/UserDetails');
 require('dotenv').config();
 
 const createDocument = async (userId,documentTypeId) => {
@@ -181,21 +181,18 @@ const getDocumentByStatus = async (req, res) => {
     const userIds = documents.map(doc => doc.userId);
     console.log('UserIds extracted:', userIds);
 
-    // Initialize an empty object to store UserDetails for each userId
-    const userDetailsMap = {};
-
     // Fetch UserDetails for each userId and store in userDetailsMap
-    for (const userId of userIds) {
+    const userDetailsMap = {};
+    await Promise.all(userIds.map(async userId => {
       try {
-        const userDetailss = await UserDetails.findOne({ where: { userId } });
-        console.log(`UserDetails fetched for userId ${userId}:`, userDetailss);
-        userDetailsMap[userId] = userDetailss;
+        const userDetails = await UserDetails.findOne({ where: { userId } });
+        console.log(`UserDetails fetched for userId ${userId}:`, userDetails);
+        userDetailsMap[userId] = userDetails || {}; // Ensure userDetails is not null
       } catch (error) {
         console.error(`Error fetching UserDetails for userId ${userId}:`, error);
-        // Handle error if necessary
-        userDetailsMap[userId] = null; // or handle default user details
+        userDetailsMap[userId] = null; // Handle error by setting userDetails to null
       }
-    }
+    }));
 
     // Prepare response with additional data based on documentTypeId
     const formattedDocuments = await Promise.all(documents.map(async doc => {
@@ -230,8 +227,14 @@ const getDocumentByStatus = async (req, res) => {
       const userDetails = userDetailsMap[doc.userId];
       console.log(`UserDetails for userId ${doc.userId}:`, userDetails);
 
-      // Get user data from the document's include
-      const user = doc.User.toJSON(); // Assuming User is included properly
+      // Prepare user object with userDetails included
+      const user = {
+        id: doc.User.id,
+        username: doc.User.username,
+        email: doc.User.email,
+        // Include userDetails within user object
+        userDetails: userDetails
+      };
 
       return {
         id: doc.id,
@@ -242,8 +245,7 @@ const getDocumentByStatus = async (req, res) => {
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
         additionalData: additionalData,
-        userDetails: userDetails,
-        user: user // Include user data in the response
+        user: user // Include user data with userDetails
       };
     }));
 
@@ -254,6 +256,7 @@ const getDocumentByStatus = async (req, res) => {
     res.status(500).json({ error: 'Error fetching documents: ' + error.message });
   }
 };
+
 
 
 
