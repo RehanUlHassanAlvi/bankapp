@@ -1,4 +1,4 @@
-const { User,Document,DocumentType } = require('../models');
+const { User,Document,DocumentType,UserDetails } = require('../models');
 require('dotenv').config();
 
 const createDocument = async (userId,documentTypeId) => {
