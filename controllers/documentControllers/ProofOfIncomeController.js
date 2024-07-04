@@ -1,5 +1,6 @@
 const { ProofOfIncome } = require('../../models');
 const {createDocument}=require('../docController')
+const {Document}=require('../..')
 const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
 
 // Get a specific proof of income by ID
@@ -68,6 +69,12 @@ const deleteProofOfIncome = async (req, res) => {
     const proofOfIncome = await ProofOfIncome.findOne({ where: { documentId: req.params.id} });
     if (proofOfIncome) {
       await proofOfIncome.destroy();
+      const proofOfIncome = await Document.findOne({ where: { documentId: req.params.id} });
+      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      if(docu)
+      {
+          await docu.destroy();
+      }
       res.json({ message: 'Proof of Income deleted successfully' });
     } else {
       res.status(404).json({ message: 'Proof of Income not found' });

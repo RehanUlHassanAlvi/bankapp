@@ -106,6 +106,11 @@ const deleteProofOfOperatingAddress = async (req, res) => {
     const proofOfOperatingAddress = await ProofOfOperatingAddress.findOne({ where: { documentId: req.params.id} });
     if (proofOfOperatingAddress) {
       await proofOfOperatingAddress.destroy();
+      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      if(docu)
+      {
+          await docu.destroy();
+      }
       res.json({ message: 'Proof of Operating Address deleted successfully' });
     } else {
       res.status(404).json({ message: 'Proof of Operating Address not found' });

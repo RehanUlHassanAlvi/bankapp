@@ -104,6 +104,11 @@ const deleteProofOfResidence = async (req, res) => {
     const proofOfResidence = await ProofOfResidence.findOne({ where: { documentId: req.params.id} });
     if (proofOfResidence) {
       await proofOfResidence.destroy();
+      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      if(docu)
+      {
+          await docu.destroy();
+      }
       res.json({ message: 'Proof of Residence deleted successfully' });
     } else {
       res.status(404).json({ message: 'Proof of Residence not found' });

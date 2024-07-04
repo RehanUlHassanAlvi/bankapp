@@ -1,7 +1,7 @@
 const { IdentityDocument } = require('../../models');
 const {createDocument}=require('../docController')
 const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
-
+const {Document}=require('../../models')
 // Get a specific identity document by ID
 const getIdentityDocumentById = async (req, res) => {
   try {
@@ -68,6 +68,11 @@ const deleteIdentityDocument = async (req, res) => {
     const identityDocument = await IdentityDocument.findOne({ where: { documentId: req.params.id} });
     if (identityDocument) {
       await identityDocument.destroy();
+      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      if(docu)
+      {
+          await docu.destroy();
+      }
       res.json({ message: 'Identity Document deleted successfully' });
     } else {
       res.status(404).json({ message: 'Identity Document not found' });

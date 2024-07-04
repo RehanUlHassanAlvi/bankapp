@@ -105,6 +105,11 @@ const deleteCertificateOfIncorporation = async (req, res) => {
     const certificate = await CertificateOfIncorporation.findOne({ where: { documentId: req.params.id} });
     if (certificate) {
       await certificate.destroy();
+      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      if(docu)
+      {
+          await docu.destroy();
+      }
       res.json({ message: 'Certificate of Incorporation deleted successfully' });
     } else {
       res.status(404).json({ message: 'Certificate of Incorporation not found' });

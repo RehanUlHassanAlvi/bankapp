@@ -105,6 +105,11 @@ const deleteTaxClearance = async (req, res) => {
     const taxClearance = await TaxClearance.findOne({ where: { documentId: req.params.id} });
     if (taxClearance) {
       await taxClearance.destroy();
+      const docu=await Document.findOne({ where: { documentId: req.params.id} });
+      if(docu)
+      {
+          await docu.destroy();
+      }
       res.json({ message: 'Tax Clearance deleted successfully' });
     } else {
       res.status(404).json({ message: 'Tax Clearance not found' });
