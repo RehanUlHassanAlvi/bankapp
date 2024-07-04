@@ -170,6 +170,8 @@ const getDocumentCounts = async (req, res) => {
     let rejectedCount = 0;
     let requestedCount = 0;
 
+    console.log("dcouments: ",allDocuments)
+
     // Count documents by status
     allDocuments.forEach(document => {
       switch (document.status) {
