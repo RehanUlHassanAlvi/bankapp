@@ -1,5 +1,6 @@
-const { User,Document,DocumentType,UserDetails } = require('../models');
+const { User,Document,DocumentType } = require('../models');
 const { TaxClearance,ProofOfIncome,ProofOfOperatingAddress,ProofOfResidence,CertificateOfIncorporation,IdentityDocument } = require('../models');
+const {UserDetails}=require('../models')
 require('dotenv').config();
 
 const createDocument = async (userId,documentTypeId) => {
@@ -156,10 +157,13 @@ const getDocumentById = async (req, res) => {
     res.status(500).json({ error: 'Error fetching document: ' + error.message });
   }
 };
+
 const getDocumentByStatus = async (req, res) => {
   const { status } = req.body;
 
   try {
+    console.log('Fetching documents with status:', status);
+
     // Fetch all documents with User and DocumentType included
     const documents = await Document.findAll({
       where: { status },
@@ -167,20 +171,31 @@ const getDocumentByStatus = async (req, res) => {
     });
 
     if (!documents || documents.length === 0) {
+      console.log('Documents not found or empty array returned');
       return res.status(404).json({ error: 'Documents not found' });
     }
 
+    console.log('Documents fetched:', documents.length);
+
     // Extract userIds from documents to fetch UserDetails in bulk
     const userIds = documents.map(doc => doc.userId);
+    console.log('UserIds extracted:', userIds);
 
-    // Fetch UserDetails for all userIds in one query
+    // Initialize an empty object to store UserDetails for each userId
     const userDetailsMap = {};
-    const userDetails = await UserDetails.findAll({ where: { userId: userIds } });
 
-    // Organize UserDetails in a map for quick lookup
-    userDetails.forEach(detail => {
-      userDetailsMap[detail.userId] = detail;
-    });
+    // Fetch UserDetails for each userId and store in userDetailsMap
+    for (const userId of userIds) {
+      try {
+        const userDetailss = await UserDetails.findOne({ where: { userId } });
+        console.log(`UserDetails fetched for userId ${userId}:`, userDetailss);
+        userDetailsMap[userId] = userDetailss;
+      } catch (error) {
+        console.error(`Error fetching UserDetails for userId ${userId}:`, error);
+        // Handle error if necessary
+        userDetailsMap[userId] = null; // or handle default user details
+      }
+    }
 
     // Prepare response with additional data based on documentTypeId
     const formattedDocuments = await Promise.all(documents.map(async doc => {
@@ -188,29 +203,35 @@ const getDocumentByStatus = async (req, res) => {
 
       switch (doc.documentTypeId) {
         case 1: // IdentityDocument
-          additionalData = await IdentityDocument.findOne({ where: { id: doc.id } });
+          additionalData = await IdentityDocument.findOne({ where: { documentId: doc.id } });
           break;
         case 2: // CertificateOfIncorporation
-          additionalData = await CertificateOfIncorporation.findOne({ where: { id: doc.id } });
+          additionalData = await CertificateOfIncorporation.findOne({ where: { documentId: doc.id } });
           break;
         case 3: // ProofOfIncome
-          additionalData = await ProofOfIncome.findOne({ where: { id: doc.id } });
+          additionalData = await ProofOfIncome.findOne({ where: { documentId: doc.id } });
           break;
         case 4: // ProofOfOperatingAddress
-          additionalData = await ProofOfOperatingAddress.findOne({ where: { id: doc.id } });
+          additionalData = await ProofOfOperatingAddress.findOne({ where: { documentId: doc.id } });
           break;
         case 5: // ProofOfResidence
-          additionalData = await ProofOfResidence.findOne({ where: { id: doc.id } });
+          additionalData = await ProofOfResidence.findOne({ where: { documentId: doc.id } });
           break;
         case 6: // TaxClearance
-          additionalData = await TaxClearance.findOne({ where: { id: doc.id } });
+          additionalData = await TaxClearance.findOne({ where: { documentId: doc.id } });
           break;
         default:
           break;
       }
 
+      console.log(`Additional data fetched for documentId ${doc.id}:`, additionalData);
+
       // Get UserDetails for the User associated with the document
       const userDetails = userDetailsMap[doc.userId];
+      console.log(`UserDetails for userId ${doc.userId}:`, userDetails);
+
+      // Get user data from the document's include
+      const user = doc.User.toJSON(); // Assuming User is included properly
 
       return {
         id: doc.id,
@@ -221,15 +242,19 @@ const getDocumentByStatus = async (req, res) => {
         createdAt: doc.createdAt,
         updatedAt: doc.updatedAt,
         additionalData: additionalData,
-        userDetails: userDetails // Append userDetails to the document object
+        userDetails: userDetails,
+        user: user // Include user data in the response
       };
     }));
 
+    console.log('Sending formatted documents response:', formattedDocuments.length);
     res.status(200).json(formattedDocuments);
   } catch (error) {
+    console.error('Error fetching documents:', error);
     res.status(500).json({ error: 'Error fetching documents: ' + error.message });
   }
 };
+
 
 
 
