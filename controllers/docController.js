@@ -1,4 +1,5 @@
 const { User,Document,DocumentType,UserDetails } = require('../models');
+const { TaxClearance,ProofOfIncome,ProofOfOperatingAddress,ProofOfResidence,CertificateOfIncorporation,IdentityDocument } = require('../models');
 require('dotenv').config();
 
 const createDocument = async (userId,documentTypeId) => {
@@ -155,8 +156,6 @@ const getDocumentById = async (req, res) => {
     res.status(500).json({ error: 'Error fetching document: ' + error.message });
   }
 };
-
-
 const getDocumentByStatus = async (req, res) => {
   const { status } = req.body;
 
@@ -184,31 +183,31 @@ const getDocumentByStatus = async (req, res) => {
     });
 
     // Prepare response with additional data based on documentTypeId
-    const formattedDocuments = documents.map(doc => {
+    const formattedDocuments = await Promise.all(documents.map(async doc => {
       let additionalData = {};
 
-      // switch (doc.documentTypeId) {
-      //   case 1: // IdentityDocument
-      //     additionalData = { /* Fetch data for IdentityDocument */ };
-      //     break;
-      //   case 2: // CertificateOfIncorporation
-      //     additionalData = { /* Fetch data for CertificateOfIncorporation */ };
-      //     break;
-      //   case 3: // ProofOfIncome
-      //     additionalData = { /* Fetch data for ProofOfIncome */ };
-      //     break;
-      //   case 4: // ProofOfOperatingAddress
-      //     additionalData = { /* Fetch data for ProofOfOperatingAddress */ };
-      //     break;
-      //   case 5: // ProofOfResidence
-      //     additionalData = { /* Fetch data for ProofOfResidence */ };
-      //     break;
-      //   case 6: // TaxClearance
-      //     additionalData = { /* Fetch data for TaxClearance */ };
-      //     break;
-      //   default:
-      //     break;
-      // }
+      switch (doc.documentTypeId) {
+        case 1: // IdentityDocument
+          additionalData = await IdentityDocument.findOne({ where: { id: doc.id } });
+          break;
+        case 2: // CertificateOfIncorporation
+          additionalData = await CertificateOfIncorporation.findOne({ where: { id: doc.id } });
+          break;
+        case 3: // ProofOfIncome
+          additionalData = await ProofOfIncome.findOne({ where: { id: doc.id } });
+          break;
+        case 4: // ProofOfOperatingAddress
+          additionalData = await ProofOfOperatingAddress.findOne({ where: { id: doc.id } });
+          break;
+        case 5: // ProofOfResidence
+          additionalData = await ProofOfResidence.findOne({ where: { id: doc.id } });
+          break;
+        case 6: // TaxClearance
+          additionalData = await TaxClearance.findOne({ where: { id: doc.id } });
+          break;
+        default:
+          break;
+      }
 
       // Get UserDetails for the User associated with the document
       const userDetails = userDetailsMap[doc.userId];
@@ -224,7 +223,7 @@ const getDocumentByStatus = async (req, res) => {
         additionalData: additionalData,
         userDetails: userDetails // Append userDetails to the document object
       };
-    });
+    }));
 
     res.status(200).json(formattedDocuments);
   } catch (error) {
