@@ -155,42 +155,51 @@ const getDocumentById = async (req, res) => {
     res.status(500).json({ error: 'Error fetching document: ' + error.message });
   }
 };
-
+// Get document counts by status
 const getDocumentCounts = async (req, res) => {
   try {
-    const counts = await Document.aggregate('status', 'COUNT', {
-      distinct: true,
-      where: {},
-      group: ['status']
-    });
+    const allDocuments = await Document.findAll(); // Fetch all documents
 
-    const countsObject = {
-      pending: 0,
-      approved: 0,
-      rejected: 0,
-      requested: 0
-    };
+    // Initialize counts
+    let pendingCount = 0;
+    let approvedCount = 0;
+    let rejectedCount = 0;
+    let requestedCount = 0;
 
-    counts.forEach(count => {
-      const status = count.status;
-      const countValue = count.count;
-      if (countsObject.hasOwnProperty(status)) {
-        countsObject[status] = countValue;
+    // Count documents by status
+    allDocuments.forEach(document => {
+      switch (document.status) {
+        case 'pending':
+          pendingCount++;
+          break;
+        case 'approved':
+          approvedCount++;
+          break;
+        case 'rejected':
+          rejectedCount++;
+          break;
+        case 'requested':
+          requestedCount++;
+          break;
+        default:
+          break;
       }
     });
 
-    res.json({
-      pending: countsObject.pending,
-      approved: countsObject.approved,
-      rejected: countsObject.rejected,
-      requested: countsObject.requested
-    });
+    // Prepare response object
+    const countsObject = {
+      pending: pendingCount,
+      approved: approvedCount,
+      rejected: rejectedCount,
+      requested: requestedCount
+    };
+
+    res.json(countsObject);
   } catch (error) {
     console.error('Error fetching document counts:', error);
     res.status(500).json({ message: 'Server error', error });
   }
 };
-
 
 module.exports = {
   saveDocument,
