@@ -161,7 +161,7 @@ const getDocumentByStatus = async (req, res) => {
   const {status}=req.body;
 
   try {
-    const dcouments = await Document.findAll({
+    const documents = await Document.findAll({
       where: {
         status
       },
