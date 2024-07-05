@@ -2,6 +2,8 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Document, DocumentType } = require('../models');
 const UserDetails = require('../models/UserDetails');
+const sendEmail = require('../utils/sendEmail');
+
 require('dotenv').config();
 
 const saveUserDetails = async (req, res) => {
@@ -84,6 +86,29 @@ const saveUserDetails = async (req, res) => {
   }
 };
 
+const updateStatus = async (req, res) => {
+  const { userId, status } = req.body;
+
+  try {
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    await user.update({
+      isKycVerified: status === 'approved' ? 1 : status === 'rejected' ? 0 : 'pending'
+    });
+    await sendEmail(User.email, 'KYC '+status, 'Dear User!\nYour KYC status is updated to: '+status)
+
+    return res.status(200).json({ message: 'User status updated successfully' });
+  } catch (error) {
+    console.error('Error updating user status:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+module.exports = { updateStatus };
 
 
 const getAllusers = async (req, res) => {
@@ -149,4 +174,4 @@ const getDocumentsAgainstAUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction };
+module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus };

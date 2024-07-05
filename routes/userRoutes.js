@@ -8,5 +8,6 @@ router.post('/saveUserDetails',authenticateToken, saveUserDetails);
 router.get('/getUserDetails',authenticateToken, getUserDetails);
 router.get('/getDocs',authenticateToken, getDocumentsAgainstAUser);
 router.get('/getAllUsers',authenticateToken, getAllusers);
+router.post('/updateStatuss',authenticateToken, updateStatus);
 
 module.exports = router;

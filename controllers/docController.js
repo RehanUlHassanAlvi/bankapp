@@ -60,7 +60,7 @@ const updateDocumentStats = async (req, res) => {
 
 
 
-    await sendEmail(document.User.email, document.DocumentType.name+' '+status, 'Dear User!/nYour Document: '+document.DocumentType.name+' is in the status: '+status)
+    await sendEmail(document.User.email, document.DocumentType.name+' '+status, 'Dear User!\nYour Document: '+document.DocumentType.name+' is in the status: '+status)
 
     res.status(200).json({ message: 'Document Status updated successfully',docRes });
   } catch (error) {
@@ -72,6 +72,7 @@ const updateDocumentStats = async (req, res) => {
 
 
 const saveDocument = async (req, res) => {
+  
   const { id } = req.params; // Get document id from URL parameters
   const { userId, documentTypeId, url, status } = req.body; // Get document data from request body
 

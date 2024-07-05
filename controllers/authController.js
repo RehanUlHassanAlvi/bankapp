@@ -7,7 +7,7 @@ const UserDetails = require('../models/UserDetails');
 require('dotenv').config();
 
 const register = async (req, res) => {
-  const { password, email, type,companyName,website,country,state,city,imageUrl } = req.body;
+  const { name,password, email, type,companyName,website,country,state,city,imageUrl } = req.body;
 
   try {
     // Check if user already exists
@@ -37,7 +37,13 @@ const register = async (req, res) => {
       email,
       imageUrl
     });
-  }
+    }
+    else if (type ==='user'){
+      await UserDetails.create({
+        userId: newUser.id,
+        name
+      });
+    }
 
     // Send OTP via email
     await sendEmail(newUser.email, 'Your OTP Code', `Your OTP code is ${otp}`);
@@ -210,6 +216,7 @@ const addKyc = async (req, res) => {
     }
 
     user.kycImageURL = kycUrl;
+    user.isKycVerified=2;
     await user.save();
 
     res.status(200).json({ message: 'KYC added Successfully, Admin will verify' });
