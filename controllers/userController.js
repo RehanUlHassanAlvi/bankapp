@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User, Document, DocumentType } = require('../models');
+const { User, Document, DocumentType,ProofOfOperatingAddress,CertificateOfIncorporation,TaxClearance } = require('../models');
 const UserDetails = require('../models/UserDetails');
 const sendEmail = require('../utils/sendEmail');
 const { register } = require('./authController');
@@ -166,16 +166,16 @@ const updateStatus = async (req, res) => {
 
 const getUsersByKycVerifiedStatus = async (req, res) => {
   const { status } = req.body;
-  let isKycVerified=0
-  if (status=="registered"){
-    isKycVerified=2
-  }else if(status=="unregistered"){
-    isKycVerified=0
-  }else if(status=="approved"){
-    isKycVerified=1}
-                    
+  let isKycVerified = 0;
+  if (status === "registered") {
+    isKycVerified = 2;
+  } else if (status === "unregistered") {
+    isKycVerified = 0;
+  } else if (status === "approved") {
+    isKycVerified = 1;
+  }
 
-                        console.log("kyc",isKycVerified)
+  console.log("kyc", isKycVerified);
   try {
     // Validate isKycVerified input
     if (![0, 1, 2].includes(parseInt(isKycVerified))) {
@@ -204,14 +204,65 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
       }
     });
 
-    // Map UserDetails to corresponding Users based on userId
+    // Fetch documents for business users
+    const businessUserIds = users.filter(user => user.type === 'business').map(user => user.id);
+
+    const certificateDocuments = await Document.findAll({
+      where: {
+        userId: businessUserIds,
+        documentTypeId: 2 // Assuming 2 corresponds to CertificateOfIncorporation
+      }
+    });
+
+    const proofOfAddressDocuments = await Document.findAll({
+      where: {
+        userId: businessUserIds,
+        documentTypeId: 4 // Assuming 6 corresponds to ProofOfOperatingAddress
+      }
+    });
+
+    const taxClearanceDocuments = await Document.findAll({
+      where: {
+        userId: businessUserIds,
+        documentTypeId: 6 // Assuming 4 corresponds to TaxClearance
+      }
+    });
+
+    // Fetch related entries from each document-specific model
+    const certificateIds = certificateDocuments.map(doc => doc.id);
+    const proofOfAddressIds = proofOfAddressDocuments.map(doc => doc.id);
+    const taxClearanceIds = taxClearanceDocuments.map(doc => doc.id);
+
+    const certificatesOfIncorporation = await CertificateOfIncorporation.findAll({
+      where: { documentId: certificateIds }
+    });
+
+    const proofsOfOperatingAddress = await ProofOfOperatingAddress.findAll({
+      where: { documentId: proofOfAddressIds }
+    });
+
+    const taxClearances = await TaxClearance.findAll({
+      where: { documentId: taxClearanceIds }
+    });
+
+    // Map UserDetails and Documents to corresponding Users based on userId
     const usersWithDetails = users.map(user => {
       const userDetail = userDetails.find(detail => detail.userId === user.id);
+      const userDocuments = user.type === 'business' ? {
+        documents: {
+          CertificateOfIncorporation: certificatesOfIncorporation.find(doc => doc.documentId === certificateDocuments.find(d => d.userId === user.id).id) || {},
+          ProofOfOperatingAddress: proofsOfOperatingAddress.find(doc => doc.documentId === proofOfAddressDocuments.find(d => d.userId === user.id).id) || {},
+          TaxClearance: taxClearances.find(doc => doc.documentId === taxClearanceDocuments.find(d => d.userId === user.id).id) || {}
+        }
+      } : {};
+
       return {
         id: user.id,
         email: user.email,
         type: user.type,
-        UserDetails: userDetail || {} // Include UserDetails or empty object if not found
+        kycImageUrl:user.kycImageUrl,
+        UserDetails: userDetail || {},
+        ...userDocuments // Include documents if user type is 'business'
       };
     });
 
@@ -222,6 +273,8 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
     res.status(500).json({ message: 'Server error', error });
   }
 };
+
+
 
 const getUserCounts = async (req, res) => {
   try {
