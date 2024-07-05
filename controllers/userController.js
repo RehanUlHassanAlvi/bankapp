@@ -165,12 +165,17 @@ const updateStatus = async (req, res) => {
 };
 
 const getUsersByKycVerifiedStatus = async (req, res) => {
-  const { status } = req.query;
-  const isKycVerified = status === 'registered' ? 2 :
-                        status === 'unregistered' ? 0 :
-                        status === 'approved' ? 1 :
-                        0; // Default value if none of the conditions match
+  const { status } = req.body;
+  let isKycVerified=0
+  if (status=="registered"){
+    isKycVerified=2
+  }else if(status=="unregistered"){
+    isKycVerified=0
+  }else if(status=="approved"){
+    isKycVerified=1}
+                    
 
+                        console.log("kyc",isKycVerified)
   try {
     // Validate isKycVerified input
     if (![0, 1, 2].includes(parseInt(isKycVerified))) {
