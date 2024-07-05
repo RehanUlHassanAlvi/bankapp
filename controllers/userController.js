@@ -120,6 +120,7 @@ const getUserCounts = async (req, res) => {
 
     // Count users by isKycVerified status
     allUsers.forEach(user => {
+      console.log(user.isKycVerified)
       switch (user.isKycVerified) {
         case 1:
           approvedCount++;
