@@ -1,6 +1,8 @@
 const { User,Document,DocumentType } = require('../models');
 const { TaxClearance,ProofOfIncome,ProofOfOperatingAddress,ProofOfResidence,CertificateOfIncorporation,IdentityDocument } = require('../models');
 const UserDetails = require('../models/UserDetails');
+const sendEmail = require('../utils/sendEmail');
+
 require('dotenv').config();
 
 const createDocument = async (userId,documentTypeId) => {
@@ -40,7 +42,14 @@ const updateDocumentStats = async (req, res) => {
   const { documentId,status } = req.body;
 
   try {
-    const  document = await Document.findByPk(documentId);
+    const document = await Document.findByPk(id, {
+      include: [
+        { model: DocumentType },
+        { model: User }
+      ]
+    });
+   
+    
     document.status=status;
 
     if (!document) {
@@ -48,6 +57,11 @@ const updateDocumentStats = async (req, res) => {
     }
 
     let docRes=await document.save();
+
+
+
+
+    sendEmail(document.User.email, document.DocumentType.name+' '+status, 'Dear User!/nYour Document: '+document.DocumentType.name+' is in the status: '+status)
 
     res.status(200).json({ message: 'Document Status updated successfully',docRes });
   } catch (error) {
@@ -336,9 +350,6 @@ const getDocumentCounts = async (req, res) => {
   }
 };
 
-module.exports = {
-  getDocumentCounts
-};
 
 module.exports = {
   saveDocument,
