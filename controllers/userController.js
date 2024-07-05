@@ -217,14 +217,14 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
     const proofOfAddressDocuments = await Document.findAll({
       where: {
         userId: businessUserIds,
-        documentTypeId: 4 // Assuming 6 corresponds to ProofOfOperatingAddress
+        documentTypeId: 4 // Assuming 4 corresponds to ProofOfOperatingAddress
       }
     });
 
     const taxClearanceDocuments = await Document.findAll({
       where: {
         userId: businessUserIds,
-        documentTypeId: 6 // Assuming 4 corresponds to TaxClearance
+        documentTypeId: 6 // Assuming 6 corresponds to TaxClearance
       }
     });
 
@@ -248,11 +248,21 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
     // Map UserDetails and Documents to corresponding Users based on userId
     const usersWithDetails = users.map(user => {
       const userDetail = userDetails.find(detail => detail.userId === user.id);
+      
       const userDocuments = user.type === 'business' ? {
         documents: {
-          CertificateOfIncorporation: certificatesOfIncorporation.find(doc => doc.documentId === certificateDocuments.find(d => d.userId === user.id).id) || {},
-          ProofOfOperatingAddress: proofsOfOperatingAddress.find(doc => doc.documentId === proofOfAddressDocuments.find(d => d.userId === user.id).id) || {},
-          TaxClearance: taxClearances.find(doc => doc.documentId === taxClearanceDocuments.find(d => d.userId === user.id).id) || {}
+          CertificateOfIncorporation: {
+            ...certificatesOfIncorporation.find(doc => doc.documentId === certificateDocuments.find(d => d.userId === user.id)?.id),
+            status: certificateDocuments.find(d => d.userId === user.id)?.status || null
+          },
+          ProofOfOperatingAddress: {
+            ...proofsOfOperatingAddress.find(doc => doc.documentId === proofOfAddressDocuments.find(d => d.userId === user.id)?.id),
+            status: proofOfAddressDocuments.find(d => d.userId === user.id)?.status || null
+          },
+          TaxClearance: {
+            ...taxClearances.find(doc => doc.documentId === taxClearanceDocuments.find(d => d.userId === user.id)?.id),
+            status: taxClearanceDocuments.find(d => d.userId === user.id)?.status || null
+          }
         }
       } : {};
 
@@ -260,7 +270,7 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
         id: user.id,
         email: user.email,
         type: user.type,
-        kycImageUrl:user.kycImageURL,
+        kycImageUrl: user.kycImageURL,
         UserDetails: userDetail || {},
         ...userDocuments // Include documents if user type is 'business'
       };
