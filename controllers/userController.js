@@ -109,7 +109,7 @@ const updateStatus = async (req, res) => {
         isKycVerified = 1;
         break;
       default:
-        isKycVerified = 'pending'; // Default value if status is not recognized
+        isKycVerified = 0; // Default value if status is not recognized
         break;
     }
 
