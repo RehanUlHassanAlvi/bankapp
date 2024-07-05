@@ -136,7 +136,7 @@ const userResponse = {
     updatedAt: savedUser.updatedAt
 };
     
-    if (user.isKycVerified) {
+    if (user.isKycVerified=1) {
     res.status(200).json({ message: 'Login successful', accessToken, refreshToken, user:userResponse });
     }
     else{
