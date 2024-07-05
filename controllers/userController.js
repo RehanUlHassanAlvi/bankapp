@@ -89,6 +89,43 @@ const saveUserDetails = async (req, res) => {
 
 
 
+const updateBStatus = async (req, res) => {
+  const { userId, status } = req.body;
+
+  try {
+    const user = await User.findByPk(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    let isKycVerified;
+    switch (status) {
+      case 'registered':
+        isKycVerified = 2;
+        break;
+      case 'unregistered':
+        isKycVerified = 0;
+        break;
+      case 'approved':
+        isKycVerified = 1;
+        break;
+      default:
+        isKycVerified = 0; // Default value if status is not recognized
+        break;
+    }
+
+    // Perform the update
+    await user.update({ isKycVerified });
+    await sendEmail(User.email, 'KYC '+status, 'Dear User!\nYour KYC status is updated to: '+status)
+
+    return res.status(200).json({ message: 'User status updated successfully' });
+  } catch (error) {
+    console.error('Error updating user status:', error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 
 const updateStatus = async (req, res) => {
   const { userId, status } = req.body;
@@ -286,4 +323,4 @@ const getDocumentsAgainstAUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus };
+module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus,updateBStatus };
