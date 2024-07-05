@@ -225,7 +225,7 @@ const getUserCounts = async (req, res) => {
 
     // Initialize counts
     let approvedCount = 0;
-    let rejectedCount = 0;
+    let registeredCount = 0;
     let unregisteredCount = 0;
 
     // Count users by isKycVerified status
@@ -236,10 +236,10 @@ const getUserCounts = async (req, res) => {
           approvedCount++;
           break;
         case 0:
-          rejectedCount++;
+          unregisteredCount++;
           break;
         case 2:
-          unregisteredCount++;
+          registeredCount++;
           break;
         default:
           break;
@@ -249,7 +249,7 @@ const getUserCounts = async (req, res) => {
     // Prepare response object
     const countsObject = {
       approved: approvedCount,
-      rejected: rejectedCount,
+      registered: registeredCount,
       unregistered: unregisteredCount
     };
 
