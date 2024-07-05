@@ -108,8 +108,46 @@ const updateStatus = async (req, res) => {
   }
 };
 
-module.exports = { updateStatus };
+const getUserCounts = async (req, res) => {
+  try {
+    // Fetch all users
+    const allUsers = await User.findAll({});
 
+    // Initialize counts
+    let approvedCount = 0;
+    let rejectedCount = 0;
+    let unregisteredCount = 0;
+
+    // Count users by isKycVerified status
+    allUsers.forEach(user => {
+      switch (user.isKycVerified) {
+        case 1:
+          approvedCount++;
+          break;
+        case 0:
+          rejectedCount++;
+          break;
+        case 2:
+          unregisteredCount++;
+          break;
+        default:
+          break;
+      }
+    });
+
+    // Prepare response object
+    const countsObject = {
+      approved: approvedCount,
+      rejected: rejectedCount,
+      unregistered: unregisteredCount
+    };
+
+    res.json(countsObject);
+  } catch (error) {
+    console.error('Error fetching user counts:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
 
 const getAllusers = async (req, res) => {
 
@@ -174,4 +212,4 @@ const getDocumentsAgainstAUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus };
+module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts };
