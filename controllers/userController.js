@@ -260,7 +260,7 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
         id: user.id,
         email: user.email,
         type: user.type,
-        kycImageUrl:user.kycImageUrl,
+        kycImageUrl:user.kycImageURL,
         UserDetails: userDetail || {},
         ...userDocuments // Include documents if user type is 'business'
       };
