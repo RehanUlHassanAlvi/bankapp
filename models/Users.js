@@ -34,7 +34,7 @@ const User = sequelize.define('Users', {
   },
   isKycVerified: {
     type: DataTypes.INTEGER,
-    defaultValue: 2
+    defaultValue: 0
   },
   kycImageURL: {
     type: DataTypes.STRING,

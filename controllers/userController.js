@@ -97,9 +97,24 @@ const updateStatus = async (req, res) => {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    await user.update({
-      isKycVerified: status === 'approved' ? 1 : status === 'rejected' ? 0 : 'pending'
-    });
+    let isKycVerified;
+    switch (status) {
+      case 'registered':
+        isKycVerified = 2;
+        break;
+      case 'unregistered':
+        isKycVerified = 0;
+        break;
+      case 'approved':
+        isKycVerified = 1;
+        break;
+      default:
+        isKycVerified = 'pending'; // Default value if status is not recognized
+        break;
+    }
+
+    // Perform the update
+    await user.update({ isKycVerified });
     await sendEmail(User.email, 'KYC '+status, 'Dear User!\nYour KYC status is updated to: '+status)
 
     return res.status(200).json({ message: 'User status updated successfully' });
@@ -111,8 +126,8 @@ const updateStatus = async (req, res) => {
 
 const getUsersByKycVerifiedStatus = async (req, res) => {
   const { status } = req.query;
-  const isKycVerified = status === 'registered' ? 1 :
-                        status === 'unregistered' ? 2 :
+  const isKycVerified = status === 'registered' ? 2 :
+                        status === 'unregistered' ? 0 :
                         status === 'approved' ? 1 :
                         0; // Default value if none of the conditions match
 
