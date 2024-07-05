@@ -230,6 +230,7 @@ const getUserCounts = async (req, res) => {
 
     // Count users by isKycVerified status
     allUsers.forEach(user => {
+      if(user.type!='admin'){
       console.log(user.isKycVerified)
       switch (user.isKycVerified) {
         case 1:
@@ -243,7 +244,7 @@ const getUserCounts = async (req, res) => {
           break;
         default:
           break;
-      }
+      }}
     });
 
     // Prepare response object
