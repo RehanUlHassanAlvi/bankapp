@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken');
 const { User, Document, DocumentType } = require('../models');
 const UserDetails = require('../models/UserDetails');
 const sendEmail = require('../utils/sendEmail');
-
+const { register } = require('./authController');
+const sequelize=require('../config/config')
 require('dotenv').config();
 
 const saveUserDetails = async (req, res) => {
@@ -105,6 +106,60 @@ const updateStatus = async (req, res) => {
   } catch (error) {
     console.error('Error updating user status:', error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+const getUsersByKycVerifiedStatus = async (req, res) => {
+  const { status } = req.query;
+  const isKycVerified = status === 'registered' ? 1 :
+                        status === 'unregistered' ? 2 :
+                        status === 'approved' ? 1 :
+                        0; // Default value if none of the conditions match
+
+  try {
+    // Validate isKycVerified input
+    if (![0, 1, 2].includes(parseInt(isKycVerified))) {
+      return res.status(400).json({ message: 'Invalid isKycVerified status' });
+    }
+
+    // Fetch Users based on isKycVerified status
+    const users = await User.findAll({
+      where: {
+        isKycVerified: parseInt(isKycVerified)
+      }
+    });
+
+    // If no Users found, return empty array or handle as needed
+    if (!users || users.length === 0) {
+      return res.json([]);
+    }
+
+    // Extract userIds from Users
+    const userIds = users.map(user => user.id);
+
+    // Fetch UserDetails based on userIds
+    const userDetails = await UserDetails.findAll({
+      where: {
+        userId: userIds
+      }
+    });
+
+    // Map UserDetails to corresponding Users based on userId
+    const usersWithDetails = users.map(user => {
+      const userDetail = userDetails.find(detail => detail.userId === user.id);
+      return {
+        id: user.id,
+        email: user.email,
+        type: user.type,
+        UserDetails: userDetail || {} // Include UserDetails or empty object if not found
+      };
+    });
+
+    // Return the combined data
+    res.json(usersWithDetails);
+  } catch (error) {
+    console.error('Error fetching users by isKycVerified status:', error);
+    res.status(500).json({ message: 'Server error', error });
   }
 };
 
@@ -213,4 +268,4 @@ const getDocumentsAgainstAUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts };
+module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus };
