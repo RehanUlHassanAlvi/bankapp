@@ -37,12 +37,11 @@ const createDocument = async (userId,documentTypeId) => {
 
 
 
-// Delete a document
 const updateDocumentStats = async (req, res) => {
   const { documentId,status } = req.body;
 
   try {
-    const document = await Document.findByPk(id, {
+    const document = await Document.findByPk(documentId, {
       include: [
         { model: DocumentType },
         { model: User }
@@ -61,7 +60,7 @@ const updateDocumentStats = async (req, res) => {
 
 
 
-    sendEmail(document.User.email, document.DocumentType.name+' '+status, 'Dear User!/nYour Document: '+document.DocumentType.name+' is in the status: '+status)
+    await sendEmail(document.User.email, document.DocumentType.name+' '+status, 'Dear User!/nYour Document: '+document.DocumentType.name+' is in the status: '+status)
 
     res.status(200).json({ message: 'Document Status updated successfully',docRes });
   } catch (error) {
