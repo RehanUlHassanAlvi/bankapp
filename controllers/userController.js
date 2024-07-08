@@ -286,6 +286,129 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
 
 
 
+
+
+
+const getUsersByKycVerifiedStatusEasy = async (req, res) => {
+  const { status } = req.body;
+  let isKycVerified = 0;
+  if (status === "registered") {
+    isKycVerified = 2;
+  } else if (status === "unregistered") {
+    isKycVerified = 0;
+  } else if (status === "approved") {
+    isKycVerified = 1;
+  }
+
+  console.log("kyc", isKycVerified);
+  try {
+    // Validate isKycVerified input
+    if (![0, 1, 2].includes(parseInt(isKycVerified))) {
+      return res.status(400).json({ message: 'Invalid isKycVerified status' });
+    }
+
+    // Fetch Users based on isKycVerified status
+    const users = await User.findAll({
+      where: {
+        isKycVerified: parseInt(isKycVerified)
+      }
+    });
+
+    // If no Users found, return empty array or handle as needed
+    if (!users || users.length === 0) {
+      return res.json([]);
+    }
+
+    // Extract userIds from Users
+    const userIds = users.map(user => user.id);
+
+    // Fetch UserDetails based on userIds
+    const userDetails = await UserDetails.findAll({
+      where: {
+        userId: userIds
+      }
+    });
+
+    // Fetch documents for business users
+    const businessUserIds = users.filter(user => user.type === 'business').map(user => user.id);
+
+    const certificateDocuments = await Document.findAll({
+      where: {
+        userId: businessUserIds,
+        documentTypeId: 2 // Assuming 2 corresponds to CertificateOfIncorporation
+      }
+    });
+
+    const proofOfAddressDocuments = await Document.findAll({
+      where: {
+        userId: businessUserIds,
+        documentTypeId: 4 // Assuming 4 corresponds to ProofOfOperatingAddress
+      }
+    });
+
+    const taxClearanceDocuments = await Document.findAll({
+      where: {
+        userId: businessUserIds,
+        documentTypeId: 6 // Assuming 6 corresponds to TaxClearance
+      }
+    });
+
+    // Fetch related entries from each document-specific model
+    const certificateIds = certificateDocuments.map(doc => doc.id);
+    const proofOfAddressIds = proofOfAddressDocuments.map(doc => doc.id);
+    const taxClearanceIds = taxClearanceDocuments.map(doc => doc.id);
+
+    const certificatesOfIncorporation = await CertificateOfIncorporation.findAll({
+      where: { documentId: certificateIds }
+    });
+
+    const proofsOfOperatingAddress = await ProofOfOperatingAddress.findAll({
+      where: { documentId: proofOfAddressIds }
+    });
+
+    const taxClearances = await TaxClearance.findAll({
+      where: { documentId: taxClearanceIds }
+    });
+
+    // Map UserDetails and Documents to corresponding Users based on userId
+    const usersWithDetails = users.map(user => {
+      const userDetail = userDetails.find(detail => detail.userId === user.id);
+      
+      const userDocuments = user.type === 'business' ? {
+        documents: {
+            CertificateOfIncorporation: {
+                documentId: certificatesOfIncorporation.find(doc => doc.documentId === certificateDocuments.find(d => d.userId === user.id)?.id)?.documentId || null,
+                status: certificateDocuments.find(d => d.userId === user.id)?.status || null
+            },
+            ProofOfOperatingAddress: {
+                documentId: proofsOfOperatingAddress.find(doc => doc.documentId === proofOfAddressDocuments.find(d => d.userId === user.id)?.id)?.documentId || null,
+                status: proofOfAddressDocuments.find(d => d.userId === user.id)?.status || null
+            },
+            TaxClearance: {
+                documentId: taxClearances.find(doc => doc.documentId === taxClearanceDocuments.find(d => d.userId === user.id)?.id)?.documentId || null,
+                status: taxClearanceDocuments.find(d => d.userId === user.id)?.status || null
+            }
+        }
+    } : {};
+    
+      
+
+      return {
+        id: user.id,
+        ...userDocuments // Include documents if user type is 'business'
+      };
+    });
+
+    // Return the combined data
+    res.json(usersWithDetails);
+  } catch (error) {
+    console.error('Error fetching users by isKycVerified status:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
+
+
 const getUserCounts = async (req, res) => {
   try {
     // Fetch all users
@@ -392,4 +515,4 @@ const getDocumentsAgainstAUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus,updateBStatus };
+module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus,updateBStatus,getUsersByKycVerifiedStatusEasy };
