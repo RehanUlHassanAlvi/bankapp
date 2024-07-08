@@ -486,6 +486,56 @@ const getUserDetails = async (req, res) => {
   }
 };
 
+const getAllUsersDetails = async (req, res) => {
+  try {
+    // Fetch all users
+    const users = await User.findAll();
+    
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: 'Users not found' });
+    }
+
+    // Get user IDs
+    const userIds = users.map(user => user.id);
+
+    // Fetch user details for all users
+    const userDetails = await UserDetails.findAll({
+      where: {
+        userId: userIds
+      }
+    });
+
+    // Create a map for user details
+    const userDetailsMap = {};
+    userDetails.forEach(detail => {
+      userDetailsMap[detail.userId] = detail;
+    });
+
+    // Combine user data with user details
+    const combinedDetails = users.map(user => {
+      const detail = userDetailsMap[user.id] ? userDetailsMap[user.id].toJSON() : {};
+      return {
+        id: user.id,
+        email: user.email,
+        type: user.type,
+        otp: user.otp,
+        otpExpiry: user.otpExpiry,
+        isOtpVerified: user.isOtpVerified,
+        isKycVerified: user.isKycVerified,
+        kycImageURL: user.kycImageURL,
+        refreshToken: user.refreshToken,
+        ...detail // Merge userDetails fields
+      };
+    });
+
+    res.status(200).json(combinedDetails);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
+
 
 const getDocumentsAgainstAUserFunction= async (userId)=>{
     const docs = await Document.findAll({ where: { userId } });
@@ -515,4 +565,7 @@ const getDocumentsAgainstAUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus,updateBStatus,getUsersByKycVerifiedStatusEasy };
+
+
+
+module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus,updateBStatus,getUsersByKycVerifiedStatusEasy,getAllUsersDetails};
