@@ -26,7 +26,7 @@ const register = async (req, res) => {
 
     // Save OTP details to the database
     const newUser = await User.create({ email, password: hashedPassword, type, otp, otpExpiry });
-    if (type==='client'){
+    if (type==='b'){
     await UserDetails.create({
       userId: newUser.id,
       name:companyName,

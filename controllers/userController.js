@@ -488,32 +488,32 @@ const getUserDetails = async (req, res) => {
 
 const getAllUsersDetails = async (req, res) => {
   try {
-    // Fetch all users
-    const users = await User.findAll();
-    
-    if (!users || users.length === 0) {
-      return res.status(404).json({ message: 'Users not found' });
+    // Fetch all user details
+    const userDetails = await UserDetails.findAll();
+
+    if (!userDetails || userDetails.length === 0) {
+      return res.status(404).json({ message: 'User details not found' });
     }
 
-    // Get user IDs
-    const userIds = users.map(user => user.id);
+    // Extract userIds from userDetails
+    const userIds = userDetails.map(detail => detail.userId);
 
-    // Fetch user details for all users
-    const userDetails = await UserDetails.findAll({
+    // Fetch users for all userIds
+    const users = await User.findAll({
       where: {
-        userId: userIds
+        id: userIds
       }
     });
 
-    // Create a map for user details
-    const userDetailsMap = {};
-    userDetails.forEach(detail => {
-      userDetailsMap[detail.userId] = detail;
+    // Create a map for users
+    const usersMap = {};
+    users.forEach(user => {
+      usersMap[user.id] = user.toJSON(); // Convert each user to a plain object
     });
 
-    // Combine user data with user details
-    const combinedDetails = users.map(user => {
-      const detail = userDetailsMap[user.id] ? userDetailsMap[user.id].toJSON() : {};
+    // Combine user details with user data
+    const combinedDetails = userDetails.map(detail => {
+      const user = usersMap[detail.userId] || {};
       return {
         id: user.id,
         email: user.email,
@@ -524,7 +524,26 @@ const getAllUsersDetails = async (req, res) => {
         isKycVerified: user.isKycVerified,
         kycImageURL: user.kycImageURL,
         refreshToken: user.refreshToken,
-        ...detail // Merge userDetails fields
+        userDetails: {
+          id: detail.id,
+          userId: detail.userId,
+          name: detail.name,
+          gender: detail.gender,
+          dob: detail.dob,
+          nationality: detail.nationality,
+          country: detail.country,
+          state: detail.state,
+          city: detail.city,
+          pincode: detail.pincode,
+          address: detail.address,
+          email: detail.email,
+          phoneCode: detail.phoneCode,
+          phoneNumber: detail.phoneNumber,
+          postalAddress: detail.postalAddress,
+          imageUrl: detail.imageUrl,
+          createdAt: detail.createdAt,
+          updatedAt: detail.updatedAt
+        }
       };
     });
 
@@ -533,6 +552,9 @@ const getAllUsersDetails = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+
 
 
 
