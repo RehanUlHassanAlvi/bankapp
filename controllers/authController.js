@@ -75,7 +75,6 @@ const verifyOtp = async (req, res) => {
     }
 
     // Clear OTP fields and set OTP verified flag
-    user.otp = null;
     user.otpExpiry = null;
     user.isOtpVerified = true;
     await user.save();
