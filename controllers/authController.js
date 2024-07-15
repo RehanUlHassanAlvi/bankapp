@@ -7,7 +7,7 @@ const UserDetails = require('../models/UserDetails');
 require('dotenv').config();
 
 const register = async (req, res) => {
-  const { name,password, email, type,companyName,website,country,state,city,imageUrl } = req.body;
+  const { name,password, email, type,companyName,website,country,state,city,imageUrl,postalAddress } = req.body;
 
   try {
     // Check if user already exists
@@ -34,6 +34,7 @@ const register = async (req, res) => {
       state,
       city,
       address:website,
+      postalAddress,
       email,
       imageUrl
     });
@@ -239,9 +240,15 @@ const updateKycStatus = async (req, res) => {
       return res.status(400).json({ message: 'OTP not verified' });
     }
 
-    user.isKycVerified = true;
+    user.isKycVerified = 1;
+    let surname = fullName.substring(fullName.lastIndexOf(' ') + 1);
+
+    let emailText = `Dear ${surname},\n\n` +
+    `You are successfully registered to Certus KYC platform. Please click here www.google.com to access your dashboard.\n\n` +
+    `Regards,\nCertus Team`;
+
     await user.save();
-    await sendEmail(user.email, 'Your KYC is Verified', `Your Request for KYC is approved you can now Login!`);
+    await sendEmail(user.email, 'Your KYC is Verified', emailText);
 
 
     res.status(200).json({ message: 'KYC updated Successfully' });

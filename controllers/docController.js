@@ -5,8 +5,7 @@ const sendEmail = require('../utils/sendEmail');
 
 require('dotenv').config();
 
-const createDocument = async (userId,documentTypeId) => {
- let status='pending'
+const createDocument = async (userId,documentTypeId,status='pending') => {
  let url=''
   try {
       const user = await User.findByPk(userId);
@@ -34,6 +33,7 @@ const createDocument = async (userId,documentTypeId) => {
     throw new Error('Error adding or updating document: ' + error.message);
   }
 };
+
 
 
 
@@ -351,8 +351,16 @@ const getDocumentCounts = async (req, res) => {
 };
 
 
+const requestDocumentsForAUser=async(req,res)=>{
+  const {userId,documentTypeIds}=req.body.ids;
+  for (documentTypeId of documentTypeIds){
+    await createDocument(userId,documentTypeId,'requested')
+  }
+}
+
+
 module.exports = {
   saveDocument,
   deleteDocument,
   getDocuments,
-  getDocumentById,createDocument,getDocumentCounts,getDocumentByStatus,updateDocumentStats}
+  getDocumentById,createDocument,getDocumentCounts,getDocumentByStatus,updateDocumentStats,requestDocumentsForAUser}
