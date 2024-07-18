@@ -197,22 +197,24 @@ const getDocumentById = async (req, res) => {
 };
 
 const getDocumentByStatus = async (req, res) => {
-  const userId = req.user.id; // Get userId from the authenticated user
   const { status } = req.body;
 
   try {
     console.log('Fetching documents with status:', status);
 
     // Fetch all documents with User and DocumentType included
-    const documents = await Document.findAll({
-      where: { status,id:userId },
+    const allDocuments = await Document.findAll({
+      where: { status, },
       include: [{ model: User }, { model: DocumentType }]
     });
+    const documents = allDocuments.filter(doc => ![4, 2, 6].includes(doc.documentTypeId));
+
 
     if (!documents || documents.length === 0) {
       console.log('Documents not found or empty array returned');
       return res.status(404).json({ error: 'Documents not found' });
     }
+const filteredDocuments = documents.filter(doc => ![4, 2, 6].includes(doc.documentTypeId));
 
     console.log('Documents fetched:', documents.length);
 
