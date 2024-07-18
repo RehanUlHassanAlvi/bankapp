@@ -197,6 +197,7 @@ const getDocumentById = async (req, res) => {
 };
 
 const getDocumentByStatus = async (req, res) => {
+  const userId = req.user.id; // Get userId from the authenticated user
   const { status } = req.body;
 
   try {
@@ -204,7 +205,7 @@ const getDocumentByStatus = async (req, res) => {
 
     // Fetch all documents with User and DocumentType included
     const documents = await Document.findAll({
-      where: { status },
+      where: { status,id:userId },
       include: [{ model: User }, { model: DocumentType }]
     });
 
