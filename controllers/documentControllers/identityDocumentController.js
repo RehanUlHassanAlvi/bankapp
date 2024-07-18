@@ -42,7 +42,7 @@ const saveIdentityDocument = async (req, res) => {
       // If an id is provided, update the existing IdentityDocument
       identityDocument = await IdentityDocument.findOne({ where: { documentId: id } });;
       if (identityDocument) {
-        await identityDocument.update({ identityNumber,documentId, expiryDate, attachmentUrl });
+        await identityDocument.update({ identityNumber, expiryDate, attachmentUrl });
         res.json({ message: 'Identity Document updated successfully', identityDocument });
       } else {
         res.status(404).json({ message: 'Identity Document not found' });
