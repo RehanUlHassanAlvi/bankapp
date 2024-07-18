@@ -34,7 +34,7 @@ const saveIdentityDocument = async (req, res) => {
     let identityDocument;
 
     const docExists=getDocumentsAgainstAUserAndTypeFunction(userId,1)
-    if (id || docExists.length>0) {
+    if (id!==null || docExists.length>0) {
       if (docExists){
         id=docExists[0].id
       }
