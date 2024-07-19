@@ -724,11 +724,11 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
     const fetchDocumentDetails = async (documentIds, Model) => {
       return await Model.findAll({
         where: {
-          id: documentIds
+          documentId: documentIds
         }
       });
     };
-
+cons
     // Prepare the response structure
     const businessDocuments = await Promise.all(businessIds.map(async (businessId) => {
       const documentIds = documentsByBusinessId[businessId] || [];
