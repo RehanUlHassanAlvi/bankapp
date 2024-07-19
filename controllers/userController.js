@@ -371,7 +371,9 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
 
 
 const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
-  const { userId, status } = req.body;
+  const userId = req.user.id; // Get user ID from the authenticated token
+
+  const { status } = req.body;
 
   try {
     // Validate userId input
