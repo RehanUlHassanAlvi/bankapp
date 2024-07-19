@@ -16,7 +16,6 @@ router.get('/',authenticateToken, getDocuments);
 router.get('/docSummary',authenticateToken, getDocumentCounts);
 router.post('/docUser',authenticateToken, getDocumentByStatus);
 router.post('/updateDocStatus',authenticateToken, updateDocumentStats);
-router.post('/updateRequestedDocStatus',authenticateToken, requestDocumentsForAUser);
 
 
 

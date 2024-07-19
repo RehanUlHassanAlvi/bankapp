@@ -5,6 +5,7 @@ const docRoutes = require('./routes/docRoutes');
 const userDetailsRoutes = require('./routes/userRoutes');
 const docTypesRoutes = require('./routes/docTypesRoutes')
 const allDocumentsRoutes = require('./routes/allDocumentRoutes');
+const reqDocumentRoute = require('./routes/requestedDocumentsRoutes');
 
 
 
@@ -22,7 +23,7 @@ app.use('/user',userDetailsRoutes)
 app.use('/document', docRoutes);
 app.use('/docTypes',docTypesRoutes)
 app.use('/documents',allDocumentsRoutes)
-
+app.use('/requestedDoc',reqDocumentRoute)
 
 const PORT = process.env.PORT || 3000;
 

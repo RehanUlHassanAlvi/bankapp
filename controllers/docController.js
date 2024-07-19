@@ -209,12 +209,10 @@ const getDocumentByStatus = async (req, res) => {
     });
     const documents = allDocuments.filter(doc => ![4, 2, 6].includes(doc.documentTypeId));
 
-
     if (!documents || documents.length === 0) {
       console.log('Documents not found or empty array returned');
       return res.status(404).json({ error: 'Documents not found' });
     }
-const filteredDocuments = documents.filter(doc => ![4, 2, 6].includes(doc.documentTypeId));
 
     console.log('Documents fetched:', documents.length);
 
@@ -354,16 +352,9 @@ const getDocumentCounts = async (req, res) => {
 };
 
 
-const requestDocumentsForAUser=async(req,res)=>{
-  const {userId,documentTypeIds}=req.body.ids;
-  for (documentTypeId of documentTypeIds){
-    await createDocument(userId,documentTypeId,'requested')
-  }
-}
-
 
 module.exports = {
   saveDocument,
   deleteDocument,
   getDocuments,
-  getDocumentById,createDocument,getDocumentCounts,getDocumentByStatus,updateDocumentStats,requestDocumentsForAUser}
+  getDocumentById,createDocument,getDocumentCounts,getDocumentByStatus,updateDocumentStats}
