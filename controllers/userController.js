@@ -686,15 +686,36 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
 
     // Fetch all requested documents for the user
     const allRequestedDocs = await RequestedDocument.findAll({
-      where: { userId: userId },status
+      where: { userId: userId }
     });
 
-    // Group requested documents by businessId
-    const documentsByBusinessId = allRequestedDocs.reduce((acc, doc) => {
-      if (!acc[doc.businessId]) {
-        acc[doc.businessId] = [];
+    if (!allRequestedDocs.length) {
+      return res.status(404).json({ message: 'No documents found for the user' });
+    }
+
+    // Extract document IDs and business IDs
+    const documentIds = allRequestedDocs.map(doc => doc.documentId);
+    const businessIds = [...new Set(allRequestedDocs.map(doc => doc.businessId))];
+
+    // Fetch documents based on document IDs and status
+    const documents = await Document.findAll({
+      where: {
+        id: documentIds,
+        status: status
       }
-      acc[doc.businessId].push(doc.documentId);
+    });
+
+    // Filter out the document IDs that match the given status
+    const validDocumentIds = documents.map(doc => doc.id);
+
+    // Group requested documents by businessId with valid document IDs
+    const documentsByBusinessId = allRequestedDocs.reduce((acc, doc) => {
+      if (validDocumentIds.includes(doc.documentId)) {
+        if (!acc[doc.businessId]) {
+          acc[doc.businessId] = [];
+        }
+        acc[doc.businessId].push(doc.documentId);
+      }
       return acc;
     }, {});
 
@@ -702,14 +723,14 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
     const fetchDocumentDetails = async (documentIds, Model) => {
       return await Model.findAll({
         where: {
-          documentId: documentIds
+          id: documentIds
         }
       });
     };
 
     // Prepare the response structure
-    const businessDocuments = await Promise.all(Object.keys(documentsByBusinessId).map(async (businessId) => {
-      const documentIds = documentsByBusinessId[businessId];
+    const businessDocuments = await Promise.all(businessIds.map(async (businessId) => {
+      const documentIds = documentsByBusinessId[businessId] || [];
 
       // Fetch documents from each type
       const identityDocuments = await fetchDocumentDetails(documentIds, IdentityDocument);
@@ -720,14 +741,16 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
       const businessUser = await User.findOne({
         where: { id: businessId }
       });
-      const userDetail=await UserDetails.findOne({
-        where : {userId:businessId}
-      })
+      const userDetail = await UserDetails.findOne({
+        where: { userId: businessId }
+      });
 
       return {
-        user:{
-          id:businessUser.id, name: userDetail.name,imageUrl: userDetail.imageUrl
-        }, 
+        user: {
+          id: businessUser.id,
+          name: userDetail ? userDetail.name : null,
+          imageUrl: userDetail ? userDetail.imageUrl : null
+        },
         documents: {
           IdentityDocument: identityDocuments,
           ProofOfIncome: proofOfIncomeDocuments,
@@ -744,7 +767,7 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
   }
 };
 
-
+module.exports = { getUserDocumentsByIdAndDocumentStatus };
 
 
 
