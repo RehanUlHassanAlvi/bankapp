@@ -4,7 +4,7 @@ const { Document, IdentityDocument, ProofOfIncome, ProofOfResidence } = require(
 
 const requestDocument = async (req, res) => {
   const businessId = req.user.id; // Get user ID from the authenticated token
-  const { userId, documentTypeId, expiryDate, attachmentUrl } = req.body;
+  const { userId, documentTypeId } = req.body;
 
   try {
     // Find all document IDs for the given businessId from RequestedDocument
@@ -39,11 +39,11 @@ const requestDocument = async (req, res) => {
 
     // Add the specific document type details
     if (documentTypeId === 1) {
-      await IdentityDocument.create({ documentId: document.id, expiryDate, attachmentUrl });
+      await IdentityDocument.create({ documentId: document.id,identityNumber:123, expiryDate:'2024-12-31', attachmentUrl:"" });
     } else if (documentTypeId === 3) {
-      await ProofOfIncome.create({ documentId: document.id, expiryDate, attachmentUrl });
+      await ProofOfIncome.create({ documentId: document.id, sourceName:"",payslipCompanyName:"",attachmentProof:"",attachmentFrontPage:""});
     } else if (documentTypeId === 5) {
-      await ProofOfResidence.create({ documentId: document.id, expiryDate, attachmentUrl });
+      await ProofOfResidence.create({ documentId: document.id, residentialDetails:"",durationOfStay:"",specificDetails:"",physicalAddress:"",townCity:"" });
     }
 
     return res.status(200).json({ message: 'Document Requested Successfully', reqDoc });
