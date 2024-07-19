@@ -5,7 +5,7 @@ const UserDetails = require('../models/UserDetails');
 const RequestedDocument=require('../models/RequestedDocuments')
 const sendEmail = require('../utils/sendEmail');
 const { register } = require('./authController');
-const sequelize=require('../config/config')
+const sequelize=require('../config/config');
 require('dotenv').config();
 
 const saveUserDetails = async (req, res) => {
@@ -717,9 +717,14 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
       const businessUser = await User.findOne({
         where: { id: businessId }
       });
+      const userDetail=await UserDetails.findOne({
+        where : {userId:businessId}
+      })
 
       return {
-        businessUser, // Include the business user object here
+        user:{
+          id:businessUser.id, name: userDetail.name,imageUrl: userDetail.imageUrl
+        }, 
         documents: {
           IdentityDocument: identityDocuments,
           ProofOfIncome: proofOfIncomeDocuments,

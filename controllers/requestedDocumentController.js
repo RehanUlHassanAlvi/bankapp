@@ -12,7 +12,7 @@ const requestDocument = async (req, res) => {
         
         documentId: document.id
     }
-    let reqDoc=await RequestedDocument.save(requestedDocument)
+    let reqDoc=await RequestedDocument.create(requestedDocument)
     return res.status(200).json({ message: 'Document Requested Successfully',reqDoc });
 } catch (error) {
   console.error('Error updating user status:', error);
