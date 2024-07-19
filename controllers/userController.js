@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User, Document, DocumentType,ProofOfOperatingAddress,CertificateOfIncorporation,TaxClearance, ProofOfResidence } = require('../models');
+const { User, Document, DocumentType,ProofOfOperatingAddress,CertificateOfIncorporation,TaxClearance, ProofOfResidence,IdentityDocument,ProofOfIncome } = require('../models');
 const UserDetails = require('../models/UserDetails');
 const sendEmail = require('../utils/sendEmail');
 const { register } = require('./authController');
@@ -406,9 +406,9 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
     const proofOfIncomeDocuments = documents.filter(doc => doc.documentTypeId === 3);
     const proofOfResidenceDocuments = documents.filter(doc => doc.documentTypeId === 5);
 
-    const identity = await fetchDocumentDetails(identityDocuments, CertificateOfIncorporation);
-    const income = await fetchDocumentDetails(proofOfIncomeDocuments, ProofOfOperatingAddress);
-    const residence = await fetchDocumentDetails(proofOfResidenceDocuments, TaxClearance);
+    const identity = await fetchDocumentDetails(identityDocuments,IdentityDocument );
+    const income = await fetchDocumentDetails(proofOfIncomeDocuments, ProofOfIncome);
+    const residence = await fetchDocumentDetails(proofOfResidenceDocuments, ProofOfResidence);
 
     // Combine documents
     const userDocuments = {
