@@ -26,7 +26,6 @@ const RequestedDocument = sequelize.define('RequestedDocuments', {
   }
 });
 
-// Define the association
-RequestedDocument.belongsTo(Document, { foreignKey: 'documentId', as: 'document' });
+
 
 module.exports = RequestedDocument;

@@ -2,7 +2,6 @@ const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
 const User = require('./Users'); // Adjust the path as needed
 const DocumentType = require('./DocumentTypes'); // Adjust the path as needed
-const RequestedDocument=require('./RequestedDocuments')
 const Document = sequelize.define('Documents', {
   id: {
     type: DataTypes.INTEGER,
@@ -43,7 +42,5 @@ const Document = sequelize.define('Documents', {
   }
 });
 
-// Define the association
-Document.hasMany(RequestedDocument, { foreignKey: 'documentId', as: 'requestedDocuments' });
 
 module.exports = Document;
