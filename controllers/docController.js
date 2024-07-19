@@ -5,30 +5,47 @@ const sendEmail = require('../utils/sendEmail');
 
 require('dotenv').config();
 
-const createDocument = async (userId,documentTypeId,status='pending') => {
- let url=''
+const createDocument = async (userId, documentTypeId, status = 'pending') => {
+  let url = '';
   try {
-      const user = await User.findByPk(userId);
-      if (!user) {
-        throw new Error('User not found');
-      }
+    const user = await User.findByPk(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
 
-      // Check if document type exists
-      const documentType = await DocumentType.findByPk(documentTypeId);
-      if (!documentType) {
-        throw new Error('Document type not found');
-      }
+    // Check if document type exists
+    const documentType = await DocumentType.findByPk(documentTypeId);
+    if (!documentType) {
+      throw new Error('Document type not found');
+    }
 
-      // Create the document
+    // Check if the document already exists for the user and document type
+    let existingDocument = await Document.findOne({
+      where: {
+        userId: userId,
+        documentTypeId: documentTypeId
+      }
+    });
+
+    if (existingDocument) {
+      // Update the existing document
+      existingDocument.status = status;
+      existingDocument.url = url;
+      await existingDocument.save();
+      console.log('Document Type', documentTypeId, 'Updated Against User:', userId);
+      return existingDocument;
+    } else {
+      // Create a new document
       const newDocument = await Document.create({
         userId,
         documentTypeId,
         url,
         status
       });
-      console.log('Document Type',documentTypeId, 'Created Against User:', userId)
+      console.log('Document Type', documentTypeId, 'Created Against User:', userId);
       return newDocument;
-    
+    }
+
   } catch (error) {
     throw new Error('Error adding or updating document: ' + error.message);
   }
