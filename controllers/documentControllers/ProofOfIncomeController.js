@@ -42,6 +42,7 @@ const saveProofOfIncome = async (req, res) => {
       // If an id is provided, update the existing ProofOfIncome
       proofOfIncome = await ProofOfIncome.findOne({ where: { documentId: id } });;
       if (proofOfIncome) {
+        await createDocument(userId, 3);
         await proofOfIncome.update({ sourceName, otherDetails, payslipCompanyName, attachmentProof, attachmentFrontPage });
         res.json({ message: 'Proof of Income updated successfully', proofOfIncome });
       } else {
