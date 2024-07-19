@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User, Document, DocumentType,ProofOfOperatingAddress,CertificateOfIncorporation,TaxClearance } = require('../models');
+const { User, Document, DocumentType,ProofOfOperatingAddress,CertificateOfIncorporation,TaxClearance, ProofOfResidence } = require('../models');
 const UserDetails = require('../models/UserDetails');
 const sendEmail = require('../utils/sendEmail');
 const { register } = require('./authController');
@@ -402,19 +402,19 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
     });
 
     // Fetch related entries from each document-specific model
-    const certificateDocuments = documents.filter(doc => doc.documentTypeId === 2);
-    const proofOfAddressDocuments = documents.filter(doc => doc.documentTypeId === 4);
-    const taxClearanceDocuments = documents.filter(doc => doc.documentTypeId === 6);
+    const identityDocuments = documents.filter(doc => doc.documentTypeId === 1);
+    const proofOfIncomeDocuments = documents.filter(doc => doc.documentTypeId === 3);
+    const proofOfResidenceDocuments = documents.filter(doc => doc.documentTypeId === 5);
 
-    const certificatesOfIncorporation = await fetchDocumentDetails(certificateDocuments, CertificateOfIncorporation);
-    const proofsOfOperatingAddress = await fetchDocumentDetails(proofOfAddressDocuments, ProofOfOperatingAddress);
-    const taxClearances = await fetchDocumentDetails(taxClearanceDocuments, TaxClearance);
+    const identity = await fetchDocumentDetails(identityDocuments, CertificateOfIncorporation);
+    const income = await fetchDocumentDetails(proofOfIncomeDocuments, ProofOfOperatingAddress);
+    const residence = await fetchDocumentDetails(proofOfResidenceDocuments, TaxClearance);
 
     // Combine documents
     const userDocuments = {
-      CertificateOfIncorporation: certificatesOfIncorporation,
-      ProofOfOperatingAddress: proofsOfOperatingAddress,
-      TaxClearance: taxClearances
+      IdentityDocument: identity,
+      ProofOfIncome: income,
+      ProofOfResidence: residence
     };
 
     // Map UserDetails and Documents to corresponding User
