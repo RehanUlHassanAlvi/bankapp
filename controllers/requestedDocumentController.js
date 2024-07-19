@@ -1,24 +1,30 @@
-const {createDocument}=require('../controllers/docController')
-const RequestedDocument=require('../models/RequestedDocuments')
-const {Document}=require('../models')
+const { createDocument } = require('../controllers/docController');
+const RequestedDocument = require('../models/RequestedDocuments');
+const { Document } = require('../models');
 
 const requestDocument = async (req, res) => {
   const businessId = req.user.id; // Get user ID from the authenticated token
   const { userId, documentTypeId } = req.body;
 
   try {
-    // Check if a document with the specified documentTypeId already exists for the businessId
-    const existingRequest = await RequestedDocument.findOne({
-      include: [{
-        model: Document,
-        as: 'document',
-        where: { documentTypeId: documentTypeId },
-        attributes: [] // We don't need any attributes from Document for this check
-      }],
-      where: { businessId: businessId }
+    // Find all document IDs for the given businessId from RequestedDocument
+    const existingRequests = await RequestedDocument.findAll({
+      where: { businessId: businessId },
+      attributes: ['documentId']
     });
 
-    if (existingRequest) {
+    // Extract document IDs
+    const documentIds = existingRequests.map(request => request.documentId);
+
+    // Check if any of these document IDs match the specified documentTypeId
+    const existingDocument = await Document.findOne({
+      where: {
+        id: documentIds,
+        documentTypeId: documentTypeId
+      }
+    });
+
+    if (existingDocument) {
       return res.status(400).json({ message: 'Document already requested' });
     }
 
@@ -39,8 +45,3 @@ const requestDocument = async (req, res) => {
 };
 
 module.exports = { requestDocument };
-
-
-
-
-  
