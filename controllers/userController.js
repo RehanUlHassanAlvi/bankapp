@@ -737,7 +737,7 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
       const identityDocuments = await fetchDocumentDetails(documentIds, IdentityDocument);
       const proofOfIncomeDocuments = await fetchDocumentDetails(documentIds, ProofOfIncome);
       const proofOfResidenceDocuments = await fetchDocumentDetails(documentIds, ProofOfResidence);
-
+console.log(identityDocuments,proofOfIncomeDocuments,proofOfResidenceDocuments)
       // Fetch the business user details
       const businessUser = await User.findOne({
         where: { id: businessId }
