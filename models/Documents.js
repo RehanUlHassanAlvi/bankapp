@@ -1,5 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
+const User = require('./Users'); // Adjust the path as needed
+const DocumentType = require('./DocumentTypes'); // Adjust the path as needed
 
 const Document = sequelize.define('Documents', {
   id: {
@@ -11,7 +13,7 @@ const Document = sequelize.define('Documents', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'Users',
+      model: User,
       key: 'id'
     }
   },
@@ -19,7 +21,7 @@ const Document = sequelize.define('Documents', {
     type: DataTypes.INTEGER,
     allowNull: false,
     references: {
-      model: 'DocumentTypes',
+      model: DocumentType,
       key: 'id'
     }
   },
@@ -28,7 +30,7 @@ const Document = sequelize.define('Documents', {
     allowNull: true
   },
   status: {
-    type: DataTypes.ENUM('pending', 'approved', 'rejected','requested'),
+    type: DataTypes.ENUM('pending', 'approved', 'rejected', 'requested'),
     defaultValue: 'pending'
   },
   createdAt: {
@@ -40,5 +42,8 @@ const Document = sequelize.define('Documents', {
     defaultValue: DataTypes.NOW
   }
 });
+
+// Define the association
+Document.hasMany(RequestedDocument, { foreignKey: 'documentId', as: 'requestedDocuments' });
 
 module.exports = Document;

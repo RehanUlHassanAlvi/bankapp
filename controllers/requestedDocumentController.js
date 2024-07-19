@@ -11,8 +11,9 @@ const requestDocument = async (req, res) => {
     const existingRequest = await RequestedDocument.findOne({
       include: [{
         model: Document,
+        as: 'document',
         where: { documentTypeId: documentTypeId },
-        attributes: []
+        attributes: [] // We don't need any attributes from Document for this check
       }],
       where: { businessId: businessId }
     });
@@ -38,5 +39,8 @@ const requestDocument = async (req, res) => {
 };
 
 module.exports = { requestDocument };
+
+
+
 
   

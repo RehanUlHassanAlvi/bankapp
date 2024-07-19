@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/config');
+const Document = require('./Documents');
 
 const RequestedDocument = sequelize.define('RequestedDocuments', {
   id: {
@@ -17,8 +18,15 @@ const RequestedDocument = sequelize.define('RequestedDocuments', {
   },
   documentId: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: Document,
+      key: 'id'
+    }
   }
 });
+
+// Define the association
+RequestedDocument.belongsTo(Document, { foreignKey: 'documentId', as: 'document' });
 
 module.exports = RequestedDocument;
