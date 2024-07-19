@@ -1,6 +1,6 @@
 const { createDocument } = require('../controllers/docController');
 const RequestedDocument = require('../models/RequestedDocuments');
-const { Document } = require('../models');
+const { Document, IdentityDocument, ProofOfIncome, ProofOfResidence } = require('../models');
 
 const requestDocument = async (req, res) => {
   const businessId = req.user.id; // Get user ID from the authenticated token
@@ -23,6 +23,18 @@ const requestDocument = async (req, res) => {
         documentTypeId: documentTypeId
       }
     });
+
+    if (documentTypeId==1){
+    await IdentityDocument.create({ documentId: document.id, expiryDate, attachmentUrl });
+    }
+    else if (documentTypeId==3){
+      await ProofOfIncome.create({ documentId: document.id, expiryDate, attachmentUrl });
+
+    }else if (documentTypeId==5){
+      await ProofOfResidence.create({ documentId: document.id, expiryDate, attachmentUrl });
+
+    }
+
 
     if (existingDocument) {
       return res.status(400).json({ message: 'Document already requested' });

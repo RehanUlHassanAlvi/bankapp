@@ -38,7 +38,7 @@ const saveTaxClearance = async (req, res) => {
       }
 
       // If an id is provided, update the existing TaxClearance
-      taxClearance = await TaxClearance.findOne({ where: { documentId: id } });;
+      taxClearance = await TaxClearance.findOne({ where: { documentId: id } });
       if (taxClearance) {
         await taxClearance.update({ expiryDate, attachmentUrl });
         res.json({ message: 'Tax Clearance updated successfully', taxClearance });
