@@ -661,12 +661,13 @@ const getDocumentsAgainstAUser = async (req, res) => {
     const userId = req.user.id; 
 
     const docs = await getDocumentsAgainstAUserFunction(userId)
+    const filteredDocs = docs.filter(doc => doc.status !== 'requested');
 
     if (!docs) {
       return res.status(404).json({ message: 'No Documents Found Against this user' });
     }
 
-    res.status(200).json(docs);
+    res.status(200).json(filteredDocs);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -685,7 +686,7 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
 
     // Fetch all requested documents for the user
     const allRequestedDocs = await RequestedDocument.findAll({
-      where: { userId: userId }
+      where: { userId: userId },status
     });
 
     // Group requested documents by businessId
