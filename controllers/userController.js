@@ -674,6 +674,7 @@ const getDocumentsAgainstAUser = async (req, res) => {
 };
 
 
+
 const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
   const userId = req.user.id;
   const { status } = req.body;
@@ -768,7 +769,6 @@ const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
 };
 
 module.exports = { getUserDocumentsByIdAndDocumentStatus };
-
 
 
 module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus,updateBStatus,getUserDocumentsByIdAndDocumentStatus,getUsersByKycVerifiedStatusEasy,getAllUsersDetails,updateUserDetails};
