@@ -38,11 +38,11 @@ const requestDocument = async (req, res) => {
     let reqDoc = await RequestedDocument.create(requestedDocument);
 
     // Add the specific document type details
-    if (documentTypeId === 1) {
+    if (documentTypeId == 1) {
       await IdentityDocument.create({ documentId: document.id,identityNumber:123, expiryDate:'2024-12-31', attachmentUrl:"" });
-    } else if (documentTypeId === 3) {
+    } else if (documentTypeId == 3) {
       await ProofOfIncome.create({ documentId: document.id, sourceName:"",payslipCompanyName:"",attachmentProof:"",attachmentFrontPage:""});
-    } else if (documentTypeId === 5) {
+    } else if (documentTypeId == 5) {
       await ProofOfResidence.create({ documentId: document.id, residentialDetails:"",durationOfStay:"",specificDetails:"",physicalAddress:"",townCity:"" });
     }
 
