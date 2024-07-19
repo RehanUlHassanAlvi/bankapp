@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User, Document, DocumentType,ProofOfOperatingAddress,CertificateOfIncorporation,TaxClearance, ProofOfResidence,IdentityDocument,ProofOfIncome } = require('../models');
 const UserDetails = require('../models/UserDetails');
+const RequestedDocument=require('../models/RequestedDocuments')
 const sendEmail = require('../utils/sendEmail');
 const { register } = require('./authController');
 const sequelize=require('../config/config')
@@ -370,98 +371,6 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
 
 
 
-const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
-  const userId = req.user.id; // Get user ID from the authenticated token
-
-  const { status } = req.body;
-
-  try {
-    // Validate userId input
-    if (!userId) {
-      return res.status(400).json({ message: 'User ID is required' });
-    }
-
-    // Fetch User based on userId
-    const user = await User.findOne({
-      where: { id: userId }
-    });
-
-    if (!user) {
-      return res.status(404).json({ message: 'User not found' });
-    }
-
-    // Fetch UserDetails based on userId
-    const userDetails = await UserDetails.findOne({
-      where: { userId: user.id }
-    });
-
-    // Fetch documents based on userId and status
-    const documents = await Document.findAll({
-      where: {
-        userId: user.id,
-        status: status // Document status
-      }
-    });
-
-    // Fetch related entries from each document-specific model
-    const identityDocuments = documents.filter(doc => doc.documentTypeId === 1);
-    const proofOfIncomeDocuments = documents.filter(doc => doc.documentTypeId === 3);
-    const proofOfResidenceDocuments = documents.filter(doc => doc.documentTypeId === 5);
-
-    const identity = await fetchDocumentDetails(identityDocuments,IdentityDocument );
-    const income = await fetchDocumentDetails(proofOfIncomeDocuments, ProofOfIncome);
-    const residence = await fetchDocumentDetails(proofOfResidenceDocuments, ProofOfResidence);
-
-    // Combine documents
-    const userDocuments = {
-      IdentityDocument: identity,
-      ProofOfIncome: income,
-      ProofOfResidence: residence
-    };
-
-    // Map UserDetails and Documents to corresponding User
-    const userWithDetails = {
-      id: user.id,
-      email: user.email,
-      type: user.type,
-      kycImageUrl: user.kycImageURL,
-      otp: user.otp,
-      UserDetails: userDetails || {},
-      documents: userDocuments
-    };
-
-    // Return the combined data
-    res.json(userWithDetails);
-  } catch (error) {
-    console.error('Error fetching user documents:', error);
-    res.status(500).json({ message: 'Server error', error });
-  }
-};
-
-const fetchDocumentDetails = async (documents, Model) => {
-  const documentIds = documents.map(doc => doc.id);
-  const documentDetails = await Model.findAll({
-    where: { documentId: documentIds }
-  });
-
-  // Map document details to their statuses
-  return documentDetails.map(detail => {
-    const doc = documents.find(d => d.id === detail.documentId);
-    return {
-      ...detail.get(),
-      status: doc.status
-    };
-  });
-};
-
-
-
-
-
-
-
-
-
 const getUsersByKycVerifiedStatusEasy = async (req, res) => {
   const { status } = req.body;
   let isKycVerified = 0;
@@ -760,6 +669,73 @@ const getDocumentsAgainstAUser = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
+
+const getUserDocumentsByIdAndDocumentStatus = async (req, res) => {
+  const userId = req.user.id;
+  const { status } = req.body;
+
+  try {
+    // Validate userId input
+    if (!userId) {
+      return res.status(400).json({ message: 'User ID is required' });
+    }
+
+    // Fetch all requested documents for the user
+    const allRequestedDocs = await RequestedDocument.findAll({
+      where: { userId: userId }
+    });
+
+    // Group requested documents by businessId
+    const documentsByBusinessId = allRequestedDocs.reduce((acc, doc) => {
+      if (!acc[doc.businessId]) {
+        acc[doc.businessId] = [];
+      }
+      acc[doc.businessId].push(doc.documentId);
+      return acc;
+    }, {});
+
+    // Fetch document details for each type
+    const fetchDocumentDetails = async (documentIds, Model) => {
+      return await Model.findAll({
+        where: {
+          documentId: documentIds
+        }
+      });
+    };
+
+    // Prepare the response structure
+    const businessDocuments = await Promise.all(Object.keys(documentsByBusinessId).map(async (businessId) => {
+      const documentIds = documentsByBusinessId[businessId];
+
+      // Fetch documents from each type
+      const identityDocuments = await fetchDocumentDetails(documentIds, IdentityDocument);
+      const proofOfIncomeDocuments = await fetchDocumentDetails(documentIds, ProofOfIncome);
+      const proofOfResidenceDocuments = await fetchDocumentDetails(documentIds, ProofOfResidence);
+
+      // Fetch the business user details
+      const businessUser = await User.findOne({
+        where: { id: businessId }
+      });
+
+      return {
+        businessUser, // Include the business user object here
+        documents: {
+          IdentityDocument: identityDocuments,
+          ProofOfIncome: proofOfIncomeDocuments,
+          ProofOfResidence: proofOfResidenceDocuments
+        }
+      };
+    }));
+
+    // Return the combined data
+    res.json(businessDocuments);
+  } catch (error) {
+    console.error('Error fetching user documents:', error);
+    res.status(500).json({ message: 'Server error', error });
+  }
+};
+
 
 
 

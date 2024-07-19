@@ -1,4 +1,5 @@
 const {createDocument}=require('../controllers/docController')
+const RequestedDocument=require('../models/RequestedDocuments')
 // Get a specific identity document by ID
 const requestDocument = async (req, res) => {
     const businessId = req.user.id; // Get user ID from the authenticated token
@@ -11,7 +12,7 @@ const requestDocument = async (req, res) => {
         
         documentId: document.id
     }
-    let reqDoc=await requestedDocument.save()
+    let reqDoc=await RequestedDocument.save(requestedDocument)
     return res.status(200).json({ message: 'Document Requested Successfully',reqDoc });
 } catch (error) {
   console.error('Error updating user status:', error);
