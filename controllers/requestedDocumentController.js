@@ -1,5 +1,6 @@
 const {createDocument}=require('../controllers/docController')
 const RequestedDocument=require('../models/RequestedDocuments')
+const {Document}=require('../models')
 
 const requestDocument = async (req, res) => {
   const businessId = req.user.id; // Get user ID from the authenticated token

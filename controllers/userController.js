@@ -268,7 +268,9 @@ const getUsersByKycVerifiedStatus = async (req, res) => {
     // Fetch Users based on isKycVerified status
     const users = await User.findAll({
       where: {
-        isKycVerified: parseInt(isKycVerified)
+        isKycVerified: parseInt(isKycVerified),
+        type: ['user', 'business'] // Include both 'user' and 'business' types
+
       }
     });
 
