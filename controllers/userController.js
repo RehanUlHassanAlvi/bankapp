@@ -232,13 +232,13 @@ const updateStatus = async (req, res) => {
         isKycVerified = 1;
         break;
       default:
-        isKycVerified = 0; // Default value if status is not recognized
+        isKycVerified = 0; 
         break;
     }
 
     // Perform the update
     await user.update({ isKycVerified });
-    await sendEmail(User.email, 'KYC '+status, 'Dear User!\nYour KYC status is updated to: '+status)
+    await sendEmail(user.email, 'KYC '+status, 'Dear User!\nYour KYC status is updated to: '+status)
 
     return res.status(200).json({ message: 'User status updated successfully' });
   } catch (error) {
