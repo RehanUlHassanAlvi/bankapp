@@ -1,6 +1,6 @@
 const { IdentityDocument } = require('../../models');
 const {createDocument}=require('../docController')
-const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
+const { getDocumentsAgainstAUserAndTypeFunction,updateDocStatus } = require('../userController');
 const {Document}=require('../../models')
 // Get a specific identity document by ID
 const getIdentityDocumentById = async (req, res) => {
