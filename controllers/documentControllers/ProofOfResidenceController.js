@@ -1,6 +1,6 @@
 const { ProofOfResidence } = require('../../models');
 const { createDocument } = require('../docController');
-const { getDocumentsAgainstAUserAndTypeFunction } = require('../userController');
+const { getDocumentsAgainstAUserAndTypeFunction,updateDocStatus } = require('../userController');
 const {Document}=require('../../models')
 
 // Get a specific proof of residence by ID
@@ -60,6 +60,7 @@ const saveProofOfResidence = async (req, res) => {
         attachmentAllPages, companyName, designation, affidavitDesignation
       });
 
+      await updateDocStatus(id,"pending")
       return res.json({ message: 'Proof of Residence updated successfully', proofOfResidence });
 
     } else {

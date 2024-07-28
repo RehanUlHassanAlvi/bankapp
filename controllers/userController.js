@@ -654,6 +654,12 @@ const getDocumentsAgainstAUserAndTypeFunction = async (userId, docTypeId) => {
   return docs;
 };
 
+const updateDocStatus = async (docId, status) => {
+  const doc = await Document.findOne({ where: { id:docId} });
+  doc.update({status})
+  return doc;
+};
+
 
 const getDocumentsAgainstAUser = async (req, res) => {
 
@@ -771,4 +777,4 @@ console.log(identityDocuments,proofOfIncomeDocuments,proofOfResidenceDocuments)
 module.exports = { getUserDocumentsByIdAndDocumentStatus };
 
 
-module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateStatus,getUserCounts,getUsersByKycVerifiedStatus,updateBStatus,getUserDocumentsByIdAndDocumentStatus,getUsersByKycVerifiedStatusEasy,getAllUsersDetails,updateUserDetails};
+module.exports = { getAllusers,saveUserDetails, getUserDetails,getDocumentsAgainstAUser,getDocumentsAgainstAUserFunction,getDocumentsAgainstAUserAndTypeFunction,updateDocStatus,updateStatus,getUserCounts,getUsersByKycVerifiedStatus,updateBStatus,getUserDocumentsByIdAndDocumentStatus,getUsersByKycVerifiedStatusEasy,getAllUsersDetails,updateUserDetails};
